@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'premium' }) %>
+
+        <div class="panel-content-full">
+            <div class="premium-page">
+                <div class="premium-header">
+                    <h1><i data-lucide="crown"></i> Mejora tu servidor</h1>
+                    <p>Desbloquea todas las funciones premium de rekybot para tu comunidad</p>
+                </div>
+
+                <div class="pricing-grid">
+                    <div class="pricing-card popular">
+                        <span class="pricing-popular-badge">Más popular</span>
+                        <h3>De por vida</h3>
+                        <div class="pricing-price">
+                            <span class="amount">19,99€</span>
+                            <span class="period">/único pago</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Acceso a todos los plugins premium</li>
+                            <li>Sistema de niveles completo</li>
+                            <li>Starboard ilimitado</li>
+                            <li>Tarjetas de bienvenida personalizadas</li>
+                            <li>Roles de reacción ilimitados</li>
+                            <li>Soporte prioritario</li>
+                            <li>Sin pagos recurrentes</li>
+                        </ul>
+                        <button class="btn btn-gold btn-lg">Comprar ahora</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3>Anual</h3>
+                        <div class="pricing-price">
+                            <span class="amount">1,99€</span>
+                            <span class="period">/mes</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Acceso a todos los plugins premium</li>
+                            <li>Sistema de niveles completo</li>
+                            <li>Starboard ilimitado</li>
+                            <li>Tarjetas de bienvenida personalizadas</li>
+                            <li>Roles de reacción ilimitados</li>
+                            <li>Ahorra un 60% vs mensual</li>
+                        </ul>
+                        <button class="btn btn-secondary btn-lg">Suscribirse</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3>Mensual</h3>
+                        <div class="pricing-price">
+                            <span class="amount">4,99€</span>
+                            <span class="period">/mes</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Acceso a todos los plugins premium</li>
+                            <li>Sistema de niveles completo</li>
+                            <li>Starboard ilimitado</li>
+                            <li>Tarjetas de bienvenida personalizadas</li>
+                            <li>Cancela cuando quieras</li>
+                        </ul>
+                        <button class="btn btn-secondary btn-lg">Suscribirse</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

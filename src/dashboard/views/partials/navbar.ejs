@@ -1,0 +1,18 @@
+<nav class="navbar">
+    <div class="nav-brand">
+        <a href="/"><span class="brand-icon"><i data-lucide="bot" style="width:18px;height:18px;color:#0a1422"></i></span> rekybot</a>
+    </div>
+    <div class="nav-links">
+        <a href="/#features">Plugins</a>
+        <% if (user) { %>
+            <a href="/dashboard">Dashboard</a>
+            <div class="nav-user">
+                <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=32" alt="avatar" class="nav-avatar">
+                <span><%= user.username %></span>
+                <a href="/auth/logout" class="btn btn-small btn-secondary"><i data-lucide="log-out" class="icon-sm"></i> Salir</a>
+            </div>
+        <% } else { %>
+            <a href="/auth/login" class="btn btn-small btn-primary"><i data-lucide="log-in" class="icon-sm"></i> Iniciar sesión</a>
+        <% } %>
+    </div>
+</nav>

@@ -1,0 +1,34 @@
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+
+    const iconMap = {
+        success: '<i data-lucide="check-circle-2"></i>',
+        error: '<i data-lucide="x-circle"></i>',
+        info: '<i data-lucide="info"></i>'
+    };
+
+    toast.innerHTML = `
+        <span class="toast-icon">${iconMap[type] || iconMap.info}</span>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <i data-lucide="x" style="width:14px;height:14px"></i>
+        </button>
+    `;
+
+    container.appendChild(toast);
+    lucide.createIcons({ nodes: [toast] });
+
+    requestAnimationFrame(() => toast.classList.add('toast-visible'));
+
+    setTimeout(() => {
+        toast.classList.remove('toast-visible');
+        toast.classList.add('toast-hiding');
+        setTimeout(() => toast.remove(), 400);
+    }, 3500);
+}
+</script>

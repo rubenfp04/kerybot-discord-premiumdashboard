@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niveles — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'levels' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="bar-chart-3"></i> Niveles</h1>
+            <p class="page-desc">Sistema de XP y niveles para premiar a los miembros más activos.</p>
+
+            <form id="levels-form">
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div>
+                            <h3>Sistema de niveles</h3>
+                            <p>Los miembros ganan XP al enviar mensajes</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" name="plugins.levels" <%= settings.plugins?.levels ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Canal de anuncios de nivel</label>
+                        <select name="levels_channel">
+                            <option value="">Mismo canal del mensaje</option>
+                            <% channels.forEach(ch => { %>
+                                <option value="<%= ch.id %>" <%= settings.levels_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                        <small>Donde se envía el mensaje de subida de nivel</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mensaje de subida de nivel</label>
+                        <textarea name="levels_message" rows="2" placeholder="¡{user} subió al nivel {level}!"><%= settings.levels_message || '¡{user} subió al nivel {level}!' %></textarea>
+                        <small>Variables: <code>{user}</code> <code>{level}</code></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Multiplicador de XP <span class="form-hint">(1 = normal, 2 = doble)</span></label>
+                        <select name="levels_multiplier">
+                            <option value="0.5" <%= settings.levels_multiplier == 0.5 ? 'selected' : '' %>>0.5x (lento)</option>
+                            <option value="1" <%= settings.levels_multiplier == 1 ? 'selected' : '' %>>1x (normal)</option>
+                            <option value="1.5" <%= settings.levels_multiplier == 1.5 ? 'selected' : '' %>>1.5x</option>
+                            <option value="2" <%= settings.levels_multiplier == 2 ? 'selected' : '' %>>2x (rápido)</option>
+                            <option value="3" <%= settings.levels_multiplier == 3 ? 'selected' : '' %>>3x (muy rápido)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        document.getElementById('levels-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> Guardando...';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data['plugins.levels'] = e.target.querySelector('[name="plugins.levels"]')?.checked || false;
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('Configuración guardada correctamente', 'success');
+                } else {
+                    showToast('Error al guardar', 'error');
+                }
+            } catch {
+                showToast('Error de conexión', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> Guardar cambios';
+            lucide.createIcons();
+        });
+    </script>
+    <%- include('../partials/toast') %>
+</body>
+</html>

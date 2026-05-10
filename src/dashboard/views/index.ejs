@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rekybot — Tu servidor, otro nivel</title>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <section class="hero">
+        <div class="hero-bubbles" id="bubbles"></div>
+
+        <div class="hero-jellyfish" aria-hidden="true">
+            <div class="jelly-body"></div>
+            <div class="jelly-tentacles">
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+            </div>
+        </div>
+
+        <div class="hero-content">
+            <h1><%= botName %></h1>
+            <p class="hero-subtitle">El bot que tu servidor necesita. Moderación, bienvenidas, niveles, roles de reacción y mucho más — todo desde un dashboard brutal.</p>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number"><%= serverCount %></span>
+                    <span class="stat-label">Servidores</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number"><%= userCount %></span>
+                    <span class="stat-label">Usuarios</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number"><%= commandCount %></span>
+                    <span class="stat-label">Comandos</span>
+                </div>
+            </div>
+
+            <div class="hero-buttons">
+                <% if (user) { %>
+                    <a href="/dashboard" class="btn btn-primary">Abrir Dashboard</a>
+                <% } else { %>
+                    <a href="/auth/login" class="btn btn-primary">Empezar gratis</a>
+                <% } %>
+                <a href="https://github.com" class="btn btn-secondary" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Todo lo que necesitas</h2>
+        <p class="section-desc">Plugins modulares que activas con un clic desde el dashboard</p>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+                <h3>Moderación</h3>
+                <p>Ban, kick, warns, limpieza de mensajes. Todo lo que necesitas para mantener tu servidor en orden.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="hand"></i></div>
+                <h3>Bienvenidas</h3>
+                <p>Mensajes y tarjetas personalizables de bienvenida y despedida con variables dinámicas.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="bar-chart-3"></i></div>
+                <h3>Niveles y XP</h3>
+                <p>Sistema completo de niveles para premiar a los miembros más activos de tu comunidad.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="smile-plus"></i></div>
+                <h3>Roles de reacción</h3>
+                <p>Deja que tus miembros se asignen roles con solo reaccionar a un mensaje.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="star"></i></div>
+                <h3>Starboard</h3>
+                <p>Destaca los mejores mensajes del servidor en un canal cuando reciban suficientes reacciones.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="settings"></i></div>
+                <h3>Dashboard web</h3>
+                <p>Configura absolutamente todo desde la web. Cero comandos, máximo control visual.</p>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        lucide.createIcons();
+
+        // generar burbujas
+        const container = document.getElementById('bubbles');
+        for (let i = 0; i < 15; i++) {
+            const b = document.createElement('div');
+            b.classList.add('bubble');
+            const size = Math.random() * 20 + 5;
+            b.style.width = size + 'px';
+            b.style.height = size + 'px';
+            b.style.left = Math.random() * 100 + '%';
+            b.style.animationDuration = (Math.random() * 10 + 8) + 's';
+            b.style.animationDelay = (Math.random() * 6) + 's';
+            container.appendChild(b);
+        }
+    </script>
+</body>
+</html>

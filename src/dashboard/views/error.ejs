@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error <%= code %> — rekybot</title>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="error-page">
+        <div class="hero-jellyfish" style="position:relative;right:auto;top:auto;opacity:0.5;margin-bottom:2rem;" aria-hidden="true">
+            <div class="jelly-body"></div>
+            <div class="jelly-tentacles">
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+                <div class="tentacle"></div>
+            </div>
+        </div>
+        <h1><%= code %></h1>
+        <p><%= message %></p>
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

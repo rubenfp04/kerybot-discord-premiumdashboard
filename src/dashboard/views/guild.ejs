@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= guild.name %> — rekybot</title>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('partials/sidebar', { guild, settings, active: 'home' }) %>
+
+        <!-- MAIN CONTENT — Plugin overview -->
+        <div class="panel-content-full">
+            <h1 class="page-title"><i data-lucide="puzzle"></i> Plugins</h1>
+            <p class="page-desc">Activa o desactiva los módulos de tu servidor. Haz clic en Configurar para ajustar cada uno.</p>
+
+            <!-- ESENCIALES -->
+            <h3 class="plugins-section-title">Esenciales</h3>
+            <div class="plugin-grid">
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="hand"></i></div>
+                    </div>
+                    <h3>Bienvenidas y Despedidas</h3>
+                    <p>Envía mensajes personalizados cuando alguien se une o se va. Incluye tarjeta de bienvenida.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/welcome" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="welcome" <%= settings.plugins?.welcome ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="user-plus"></i></div>
+                    </div>
+                    <h3>Auto-rol</h3>
+                    <p>Asigna roles automáticamente a los nuevos miembros cuando se unan al servidor.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/autorole" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="autorole" <%= settings.plugins?.autorole ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="shield"></i></div>
+                    </div>
+                    <h3>Moderación</h3>
+                    <p>Mantén tu servidor seguro con comandos de ban, kick, warn y limpieza de mensajes.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/moderation" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="moderation" <%= settings.plugins?.moderation ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="smile-plus"></i></div>
+                    </div>
+                    <h3>Roles de reacción</h3>
+                    <p>Permite a tus miembros obtener roles reaccionando a un mensaje específico.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/reaction-roles" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="reactionRoles" <%= settings.plugins?.reactionRoles ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="scroll-text"></i></div>
+                    </div>
+                    <h3>Logs</h3>
+                    <p>Registra acciones de moderación y eventos del servidor en un canal dedicado.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/logs" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="logs" <%= settings.plugins?.logs ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREMIUM -->
+            <h3 class="plugins-section-title">Premium ✨</h3>
+            <div class="plugin-grid">
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="bar-chart-3"></i></div>
+                        <span class="plugin-card-badge badge-gold">PRO</span>
+                    </div>
+                    <h3>Niveles</h3>
+                    <p>Sistema de XP y niveles para premiar a los miembros más activos del servidor.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/levels" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="levels" <%= settings.plugins?.levels ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="plugin-card">
+                    <div class="plugin-card-header">
+                        <div class="plugin-card-icon"><i data-lucide="star"></i></div>
+                        <span class="plugin-card-badge badge-gold">PRO</span>
+                    </div>
+                    <h3>Starboard</h3>
+                    <p>Destaca los mensajes más populares en un canal cuando reciban suficientes reacciones.</p>
+                    <div class="plugin-card-footer">
+                        <a href="/dashboard/<%= guild.id %>/starboard" class="btn btn-small btn-outline">Configurar</a>
+                        <label class="toggle">
+                            <input type="checkbox" data-plugin="starboard" <%= settings.plugins?.starboard ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        // toggle de plugins
+        document.querySelectorAll('[data-plugin]').forEach(toggle => {
+            toggle.addEventListener('change', async (e) => {
+                const plugin = e.target.dataset.plugin;
+                const enabled = e.target.checked;
+
+                try {
+                    const res = await fetch(`/api/guilds/${guildId}/plugins`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ plugin, enabled })
+                    });
+                    if (res.ok) {
+                        showToast(enabled ? `${plugin} activado` : `${plugin} desactivado`, 'success');
+                    } else {
+                        showToast('Error al guardar', 'error');
+                        e.target.checked = !enabled;
+                    }
+                } catch {
+                    showToast('Error de conexión', 'error');
+                    e.target.checked = !enabled;
+                }
+            });
+        });
+    </script>
+    <%- include('partials/toast') %>
+</body>
+</html>

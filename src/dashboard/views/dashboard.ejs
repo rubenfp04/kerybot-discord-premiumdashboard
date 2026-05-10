@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — rekybot</title>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <h1>Selecciona un servidor</h1>
+            <p>Elige el servidor que quieres configurar</p>
+        </div>
+
+        <div class="guild-grid">
+            <% guilds.forEach(guild => { %>
+                <div class="guild-card">
+                    <div class="guild-card-banner">
+                        <% if (guild.icon) { %>
+                            <img src="<%= guild.icon %>" alt="<%= guild.name %>">
+                        <% } else { %>
+                            <div class="guild-icon-placeholder"><%= guild.name.charAt(0) %></div>
+                        <% } %>
+                    </div>
+                    <div class="guild-card-body">
+                        <div class="guild-card-info">
+                            <h3><%= guild.name %></h3>
+                            <% if (guild.botIn) { %>
+                                <span class="guild-members"><%= guild.memberCount %> miembros</span>
+                            <% } else { %>
+                                <span class="badge badge-gray">Bot no añadido</span>
+                            <% } %>
+                        </div>
+                        <% if (guild.botIn) { %>
+                            <a href="/dashboard/<%= guild.id %>" class="btn btn-primary btn-small">Configurar</a>
+                        <% } else { %>
+                            <a href="https://discord.com/oauth2/authorize?client_id=<%= process.env.CLIENT_ID %>&scope=bot+applications.commands&permissions=8&guild_id=<%= guild.id %>" class="btn btn-outline btn-small" target="_blank">Invitar</a>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "rekybot",
+  "version": "1.0.0",
+  "description": "Bot de Discord multi-propósito con dashboard web configurable",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "deploy": "node src/bot/deploy-commands.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "dashboard",
+    "moderation"
+  ],
+  "author": "rekybot",
+  "license": "MIT",
+  "dependencies": {
+    "connect-mongo": "^5.1.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "mongoose": "^8.8.0",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

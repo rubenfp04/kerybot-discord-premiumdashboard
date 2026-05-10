@@ -1,0 +1,88 @@
+<aside class="panel-sidebar">
+    <div class="sidebar-guild">
+        <div class="sidebar-guild-avatar">
+            <% if (guild.icon) { %>
+                <img src="<%= guild.icon %>" alt="<%= guild.name %>">
+            <% } else { %>
+                <div class="sidebar-guild-placeholder"><%= guild.name.charAt(0) %></div>
+            <% } %>
+            <span class="sidebar-guild-status"></span>
+        </div>
+        <div class="sidebar-guild-info">
+            <span class="sidebar-guild-name"><%= guild.name %></span>
+            <span class="sidebar-guild-meta"><i data-lucide="users" class="icon-sm"></i> <%= guild.memberCount %> miembros</span>
+        </div>
+    </div>
+
+    <ul class="sidebar-nav">
+        <li class="sidebar-item <%= active === 'home' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>">
+                <span class="sidebar-icon"><i data-lucide="layout-dashboard"></i></span>
+                Panel de control
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'premium' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/premium">
+                <span class="sidebar-icon"><i data-lucide="crown"></i></span>
+                Premium
+            </a>
+        </li>
+
+        <li class="sidebar-section">Esenciales</li>
+
+        <li class="sidebar-item <%= active === 'welcome' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/welcome">
+                <span class="plugin-dot <%= settings.plugins?.welcome ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="hand"></i></span>
+                Bienvenidas
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'autorole' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/autorole">
+                <span class="plugin-dot <%= settings.plugins?.autorole ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="user-plus"></i></span>
+                Auto-rol
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'moderation' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/moderation">
+                <span class="plugin-dot <%= settings.plugins?.moderation ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="shield"></i></span>
+                Moderación
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'reaction-roles' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/reaction-roles">
+                <span class="plugin-dot <%= settings.plugins?.reactionRoles ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="smile-plus"></i></span>
+                Roles de reacción
+            </a>
+        </li>
+
+        <li class="sidebar-section">Premium</li>
+
+        <li class="sidebar-item <%= active === 'levels' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/levels">
+                <span class="plugin-dot <%= settings.plugins?.levels ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="bar-chart-3"></i></span>
+                Niveles
+                <span class="badge-premium">PRO</span>
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'starboard' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/starboard">
+                <span class="plugin-dot <%= settings.plugins?.starboard ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="star"></i></span>
+                Starboard
+                <span class="badge-premium">PRO</span>
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'logs' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/logs">
+                <span class="plugin-dot <%= settings.plugins?.logs ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="scroll-text"></i></span>
+                Logs
+            </a>
+        </li>
+    </ul>
+</aside>

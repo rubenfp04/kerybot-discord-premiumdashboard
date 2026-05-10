@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderación — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'moderation' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="shield"></i> Moderación</h1>
+            <p class="page-desc">Configura las herramientas de moderación del servidor.</p>
+
+            <form id="mod-form">
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div>
+                            <h3>Canal de logs</h3>
+                            <p>Las acciones de moderación se registrarán aquí</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" name="plugins.logs" <%= settings.plugins?.logs ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Canal de logs</label>
+                        <select name="log_channel">
+                            <option value="">Selecciona un canal</option>
+                            <% channels.forEach(ch => { %>
+                                <option value="<%= ch.id %>" <%= settings.log_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div>
+                            <h3>Rol de moderador</h3>
+                            <p>Los usuarios con este rol podrán usar comandos de moderación</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rol de moderador</label>
+                        <select name="mod_role">
+                            <option value="">Ninguno (solo permisos de Discord)</option>
+                            <% roles.forEach(r => { %>
+                                <option value="<%= r.id %>" <%= settings.mod_role === r.id ? 'selected' : '' %>>@<%= r.name %></option>
+                            <% }) %>
+                        </select>
+                        <small>Los usuarios con permisos de Discord siempre pueden moderar, esto es un rol adicional.</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        document.getElementById('mod-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> Guardando...';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data['plugins.logs'] = e.target.querySelector('[name="plugins.logs"]')?.checked || false;
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('Configuración guardada correctamente', 'success');
+                } else {
+                    showToast('Error al guardar', 'error');
+                }
+            } catch {
+                showToast('Error de conexión', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> Guardar cambios';
+            lucide.createIcons();
+        });
+    </script>
+    <%- include('../partials/toast') %>
+</body>
+</html>
