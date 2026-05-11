@@ -25,14 +25,17 @@ router.post('/guilds/:guildId/settings', isAuthenticated, hasGuildPermission, as
     const data = req.body;
 
     const allowed = [
-        'prefix', 'welcome_channel', 'welcome_message', 'welcome_card',
+        'prefix', 'welcome_channel', 'welcome_message',
         'welcome_card_bg', 'welcome_card_image', 'welcome_card_text',
-        'welcome_dm', 'welcome_dm_message',
+        'welcome_card_channel', 'welcome_dm_message',
         'leave_channel', 'leave_message', 'log_channel',
         'autorole', 'mod_role', 'language',
         'levels_channel', 'levels_message', 'levels_multiplier',
         'starboard_channel', 'starboard_threshold', 'starboard_emoji'
     ];
+
+    // campos booleanos no-plugin
+    const booleanKeys = ['welcome_card', 'welcome_dm'];
 
     const pluginKeys = [
         'plugins.welcome', 'plugins.leave', 'plugins.autorole',
@@ -46,6 +49,13 @@ router.post('/guilds/:guildId/settings', isAuthenticated, hasGuildPermission, as
     for (const key of allowed) {
         if (data[key] !== undefined) {
             update[key] = data[key] === '' ? null : data[key];
+        }
+    }
+
+    // campos booleanos (no-plugin)
+    for (const key of booleanKeys) {
+        if (data[key] !== undefined) {
+            update[key] = data[key] === true || data[key] === 'true' || data[key] === 'on';
         }
     }
 

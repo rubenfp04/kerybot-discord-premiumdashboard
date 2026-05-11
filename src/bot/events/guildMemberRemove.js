@@ -8,7 +8,7 @@ module.exports = {
     async execute(member, client) {
         const settings = await getGuildSettings(member.guild.id);
 
-        if (settings.leave_channel && settings.leave_message) {
+        if (settings.plugins?.leave && settings.leave_channel && settings.leave_message) {
             const channel = member.guild.channels.cache.get(settings.leave_channel);
             if (!channel) return;
 

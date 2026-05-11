@@ -1,5 +1,6 @@
 const { getGuildSettings } = require('../../database/models/guild');
 const { createEmbed } = require('../utils/embeds');
+const { generateWelcomeCard } = require('../utils/welcomeCard');
 
 module.exports = {
     name: 'guildMemberAdd',
@@ -34,12 +35,32 @@ module.exports = {
                     thumbnail: member.user.displayAvatarURL({ dynamic: true })
                 };
 
-                // imagen de tarjeta como imagen del embed
-                if (settings.welcome_card && settings.welcome_card_image) {
-                    embedData.image = settings.welcome_card_image;
-                }
-
                 channel.send({ embeds: [createEmbed(embedData)] }).catch(() => {});
+            }
+        }
+
+        // tarjeta de bienvenida (imagen generada con canvas)
+        if (settings.welcome_card) {
+            const cardChannelId = settings.welcome_card_channel || settings.welcome_channel;
+            const cardChannel = cardChannelId ? member.guild.channels.cache.get(cardChannelId) : null;
+            if (cardChannel) {
+                try {
+                    const cardText = settings.welcome_card_text
+                        ? replaceVars(settings.welcome_card_text).replace(/<@!?\d+>/g, member.user.username)
+                        : null;
+
+                    const attachment = await generateWelcomeCard({
+                        username: member.user.username,
+                        avatarURL: member.user.displayAvatarURL({ extension: 'png', size: 256 }),
+                        memberCount: member.guild.memberCount,
+                        backgroundURL: settings.welcome_card_image || null,
+                        text: cardText
+                    });
+
+                    await cardChannel.send({ files: [attachment] });
+                } catch (err) {
+                    console.error(`[WELCOME-CARD] Error generando tarjeta en ${member.guild.name}:`, err.message);
+                }
             }
         }
 

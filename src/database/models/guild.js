@@ -21,10 +21,11 @@ const guildSettingsSchema = new mongoose.Schema({
     // bienvenidas
     welcome_channel: { type: String, default: null },
     welcome_message: { type: String, default: null },
-    welcome_card: { type: Boolean, default: true },
+    welcome_card: { type: Boolean, default: false },
     welcome_card_bg: { type: String, default: '#000000' },
     welcome_card_image: { type: String, default: null },
     welcome_card_text: { type: String, default: null },
+    welcome_card_channel: { type: String, default: null },
     welcome_dm: { type: Boolean, default: false },
     welcome_dm_message: { type: String, default: null },
 

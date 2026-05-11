@@ -1,0 +1,115 @@
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.form-group select').forEach(select => {
+        buildCustomSelect(select);
+    });
+});
+
+function buildCustomSelect(nativeSelect) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cs-wrapper';
+
+    const trigger = document.createElement('div');
+    trigger.className = 'cs-trigger';
+    trigger.tabIndex = 0;
+
+    const selectedText = document.createElement('span');
+    selectedText.className = 'cs-selected-text';
+
+    const arrow = document.createElement('span');
+    arrow.className = 'cs-arrow';
+    arrow.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+    trigger.appendChild(selectedText);
+    trigger.appendChild(arrow);
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'cs-dropdown';
+
+    const searchInput = document.createElement('input');
+    searchInput.className = 'cs-search';
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Buscar...';
+    dropdown.appendChild(searchInput);
+
+    const optionsList = document.createElement('div');
+    optionsList.className = 'cs-options';
+    dropdown.appendChild(optionsList);
+
+    function renderOptions(filter = '') {
+        optionsList.innerHTML = '';
+        const filterLower = filter.toLowerCase();
+
+        Array.from(nativeSelect.options).forEach((opt, i) => {
+            if (filter && !opt.textContent.toLowerCase().includes(filterLower)) return;
+
+            const item = document.createElement('div');
+            item.className = 'cs-option' + (opt.selected ? ' selected' : '');
+            item.dataset.value = opt.value;
+            item.dataset.index = i;
+
+            const icon = document.createElement('span');
+            icon.className = 'cs-option-icon';
+            icon.textContent = opt.value ? '#' : '';
+            
+            const label = document.createElement('span');
+            label.className = 'cs-option-label';
+            label.textContent = opt.textContent;
+
+            item.appendChild(icon);
+            item.appendChild(label);
+
+            item.addEventListener('click', () => {
+                nativeSelect.selectedIndex = i;
+                nativeSelect.dispatchEvent(new Event('change'));
+                updateText();
+                closeDropdown();
+            });
+
+            optionsList.appendChild(item);
+        });
+    }
+
+    function updateText() {
+        const opt = nativeSelect.options[nativeSelect.selectedIndex];
+        selectedText.textContent = opt ? opt.textContent : '';
+    }
+
+    function openDropdown() {
+        wrapper.classList.add('open');
+        searchInput.value = '';
+        renderOptions();
+        searchInput.focus();
+    }
+
+    function closeDropdown() {
+        wrapper.classList.remove('open');
+    }
+
+    function toggleDropdown() {
+        wrapper.classList.contains('open') ? closeDropdown() : openDropdown();
+    }
+
+    trigger.addEventListener('click', toggleDropdown);
+
+    searchInput.addEventListener('input', () => {
+        renderOptions(searchInput.value);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) closeDropdown();
+    });
+
+    // ocultar select nativo
+    nativeSelect.style.display = 'none';
+    nativeSelect.parentNode.insertBefore(wrapper, nativeSelect.nextSibling);
+    wrapper.appendChild(trigger);
+    wrapper.appendChild(dropdown);
+
+    updateText();
+}
+</script>

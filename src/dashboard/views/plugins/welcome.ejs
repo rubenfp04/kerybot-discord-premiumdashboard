@@ -67,6 +67,17 @@
                     </div>
 
                     <div class="form-group">
+                        <label><i data-lucide="hash" class="icon-sm"></i> Canal de la tarjeta</label>
+                        <select name="welcome_card_channel" class="custom-select">
+                            <option value="">Mismo canal de bienvenida</option>
+                            <% channels.forEach(ch => { %>
+                                <option value="<%= ch.id %>" <%= settings.welcome_card_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                        <small>Si lo dejas vacío, se envía en el canal de bienvenida.</small>
+                    </div>
+
+                    <div class="form-group">
                         <label><i data-lucide="type" class="icon-sm"></i> Texto de la tarjeta <span class="badge-premium">PRO</span></label>
                         <input type="text" name="welcome_card_text" id="card-text-input" placeholder="{user} se ha unido al servidor" value="<%= settings.welcome_card_text || '' %>" <%= !settings.premium ? 'disabled' : '' %>>
                         <small>Variables: <code>{user}</code> nombre · <code>{server}</code> servidor · <code>{count}</code> miembros. <% if (!settings.premium) { %><a href="/dashboard/<%= guild.id %>/premium" style="color:var(--gold)">Hazte Premium</a> para personalizar.<% } %></small>
@@ -256,5 +267,6 @@
         });
     </script>
     <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
 </body>
 </html>
