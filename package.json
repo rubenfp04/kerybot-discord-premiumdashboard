@@ -1,6 +1,6 @@
 {
   "name": "kerybot",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Bot de Discord multi-propósito con dashboard web configurable",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kerybot/kerybot-discord-dashboard"
+    "url": "https://github.com/rubenfp04/kerybot-discord-premiumdashboard"
   },
   "dependencies": {
     "canvas": "^3.2.3",
