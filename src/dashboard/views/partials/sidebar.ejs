@@ -96,5 +96,11 @@
                 <%= t('sidebar.logs') %>
             </a>
         </li>
+        <li class="sidebar-item <%= active === 'config' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/config">
+                <span class="sidebar-icon"><i data-lucide="settings"></i></span>
+                <%= t('sidebar.config') %>
+            </a>
+        </li>
     </ul>
 </aside>

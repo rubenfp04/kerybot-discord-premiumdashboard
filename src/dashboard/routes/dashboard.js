@@ -136,4 +136,15 @@ router.get('/:guildId/premium', isAuthenticated, hasGuildAccess, async (req, res
     res.render('plugins/premium', data);
 });
 
+router.get('/:guildId/config', isAuthenticated, hasGuildAccess, async (req, res) => {
+    const data = await getGuildData(req);
+    const botMember = await req.guild.members.fetch(req.client.user.id).catch(() => null);
+    data.botUser = {
+        username: req.client.user.username,
+        displayName: botMember?.displayName || req.client.user.username,
+        avatar: botMember?.displayAvatarURL({ size: 128 }) || req.client.user.displayAvatarURL({ size: 128 })
+    };
+    res.render('plugins/config', data);
+});
+
 module.exports = router;

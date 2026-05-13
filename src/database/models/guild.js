@@ -99,6 +99,10 @@ const guildSettingsSchema = new mongoose.Schema({
     suggestions_downvote_emoji: { type: String, default: '👎' },
     suggestions_anonymous: { type: Boolean, default: false },
 
+    // bot server profile (premium)
+    bot_nickname: { type: String, default: null },
+    bot_avatar: { type: String, default: null },
+
     // reaction roles
     reaction_roles: [{
         messageId: String,
@@ -176,7 +180,8 @@ async function updateGuildSettings(guildId, data) {
     const allowed = [
         'prefix', 'welcome_channel', 'welcome_message',
         'leave_channel', 'leave_message', 'log_channel',
-        'autorole', 'mod_role', 'language'
+        'autorole', 'mod_role', 'language',
+        'bot_nickname', 'bot_avatar'
     ];
 
     const clean = {};

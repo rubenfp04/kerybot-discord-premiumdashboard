@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t("config.title") %> — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'config' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="settings"></i> <%= t("config.title") %></h1>
+            <p class="page-desc"><%= t("config.desc") %></p>
+
+            <form id="config-form">
+                <!-- Bot Language -->
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div>
+                            <h3><i data-lucide="globe" class="icon-sm"></i> <%= t("config.languageTitle") %></h3>
+                            <p><%= t("config.languageDesc") %></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="languages" class="icon-sm"></i> <%= t("config.languageLabel") %></label>
+                        <select name="language">
+                            <option value="en" data-icon="🇬🇧" <%= settings.language === 'en' ? 'selected' : '' %>>English</option>
+                            <option value="es" data-icon="🇪🇸" <%= settings.language === 'es' ? 'selected' : '' %>>Español</option>
+                        </select>
+                        <small><%= t("config.languageHint") %></small>
+                    </div>
+                </div>
+
+                <!-- Premium: Server Profile -->
+                <div class="config-section <%= !settings.premium ? 'config-locked' : '' %>">
+                    <div class="config-section-header">
+                        <div>
+                            <h3><i data-lucide="user-cog" class="icon-sm"></i> <%= t("config.profileTitle") %> <span class="pro-tag">PRO</span></h3>
+                            <p><%= t("config.profileDesc") %></p>
+                        </div>
+                    </div>
+
+                    <% if (!settings.premium) { %>
+                        <div class="info-box" style="margin-bottom:1rem">
+                            <i data-lucide="lock" class="icon-sm"></i>
+                            <div>
+                                <strong><%= t("config.premiumRequired") %></strong>
+                                <p><%= t("config.premiumRequiredDesc") %></p>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <!-- Discord-style preview card -->
+                    <div class="discord-profile-card">
+                        <div class="discord-profile-banner"></div>
+                        <div class="discord-profile-body">
+                            <div class="discord-profile-avatar-wrap">
+                                <img id="preview-avatar" src="<%= settings.bot_avatar || botUser.avatar %>" alt="bot" class="discord-profile-avatar">
+                                <span class="discord-profile-status"></span>
+                            </div>
+                            <div class="discord-profile-info">
+                                <span class="discord-profile-name" id="preview-name"><%= settings.bot_nickname || botUser.displayName %></span>
+                                <span class="discord-profile-tag">BOT</span>
+                            </div>
+                            <div class="discord-profile-divider"></div>
+                            <div class="discord-profile-section-label"><%= t('config.previewAbout') %></div>
+                            <div class="discord-profile-about"><%= t('config.previewAboutText') %></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="type" class="icon-sm"></i> <%= t("config.nicknameLabel") %></label>
+                        <input type="text" id="input-nickname" name="bot_nickname" value="<%= settings.bot_nickname || '' %>" placeholder="<%= t('config.nicknamePlaceholder') %>" maxlength="32" <%= !settings.premium ? 'disabled' : '' %>>
+                        <small><%= t("config.nicknameHint") %></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="image" class="icon-sm"></i> <%= t("config.avatarLabel") %></label>
+                        <input type="text" id="input-avatar" name="bot_avatar" value="<%= settings.bot_avatar || '' %>" placeholder="<%= t('config.avatarPlaceholder') %>" <%= !settings.premium ? 'disabled' : '' %>>
+                        <small><%= t("config.avatarHint") %></small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t("common.saving") %>';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showToast('<%= t("common.saved") %>', 'success');
+                } else {
+                    showToast('<%= t("common.errorSave") %>', 'error');
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
+            lucide.createIcons();
+        });
+
+        // Live preview
+        const nicknameInput = document.getElementById('input-nickname');
+        const avatarInput = document.getElementById('input-avatar');
+        const previewName = document.getElementById('preview-name');
+        const previewAvatar = document.getElementById('preview-avatar');
+
+        if (nicknameInput) {
+            nicknameInput.addEventListener('input', () => {
+                previewName.textContent = nicknameInput.value || '<%= botUser.displayName %>';
+            });
+        }
+
+        if (avatarInput) {
+            let debounce;
+            avatarInput.addEventListener('input', () => {
+                clearTimeout(debounce);
+                debounce = setTimeout(() => {
+                    const url = avatarInput.value.trim();
+                    if (url) {
+                        const img = new Image();
+                        img.onload = () => { previewAvatar.src = url; };
+                        img.src = url;
+                    } else {
+                        previewAvatar.src = '<%= botUser.avatar %>';
+                    }
+                }, 400);
+            });
+        }
+    </script>
+</body>
+</html>

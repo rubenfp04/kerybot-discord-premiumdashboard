@@ -1,5 +1,10 @@
 ﻿# kerybot 🤖
 
+[![GitHub release](https://img.shields.io/github/v/release/rubenfp04/kerybot-discord-premiumdashboard?style=flat-square&color=00e5ff)](https://github.com/rubenfp04/kerybot-discord-premiumdashboard/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/rubenfp04/kerybot-discord-premiumdashboard/total?style=flat-square&color=7C4DFF&label=downloads)](https://github.com/rubenfp04/kerybot-discord-premiumdashboard/releases)
+[![License](https://img.shields.io/github/license/rubenfp04/kerybot-discord-premiumdashboard?style=flat-square)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-18%2B-brightgreen?style=flat-square)](https://nodejs.org)
+
 Discord bot with a web dashboard for server management, moderation, levels, tickets, suggestions, and more.
 
 ## Features
@@ -25,8 +30,8 @@ Discord bot with a web dashboard for server management, moderation, levels, tick
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kerybot/kerybot-discord-dashboard.git
-   cd kerybot-discord-dashboard
+   git clone https://github.com/rubenfp04/kerybot-discord-premiumdashboard.git
+   cd kerybot-discord-premiumdashboard
    ```
 
 2. Install dependencies:

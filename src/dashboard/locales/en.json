@@ -6,7 +6,8 @@
     "plugins": "Plugins",
     "dashboard": "Dashboard",
     "logout": "Logout",
-    "login": "Log in"
+    "login": "Log in",
+    "connectDiscord": "Connect with Discord"
   },
 
   "landing": {
@@ -102,6 +103,7 @@
     "levels": "Levels",
     "starboard": "Starboard",
     "logs": "Logs",
+    "config": "Configuration",
     "members": "members"
   },
 
@@ -397,6 +399,27 @@
     "cancelConfirm": "Are you sure you want to cancel your subscription? You'll keep premium until the end of the current period.",
     "paymentSuccess": "Payment completed! Premium will activate in a few seconds.",
     "paymentCancelled": "Payment cancelled"
+  },
+
+  "config": {
+    "title": "Configuration",
+    "desc": "General settings for the bot in this server.",
+    "languageTitle": "Bot Language",
+    "languageDesc": "Set the language for bot responses in this server.",
+    "languageLabel": "Language",
+    "languageHint": "Bot messages, embeds and notifications will use this language.",
+    "profileTitle": "Server Profile",
+    "profileDesc": "Customize the bot's appearance in this server.",
+    "premiumRequired": "Premium required",
+    "premiumRequiredDesc": "Upgrade to Premium to customize the bot's nickname and avatar for this server.",
+    "nicknameLabel": "Bot nickname",
+    "nicknamePlaceholder": "Custom bot name",
+    "nicknameHint": "The bot's display name in this server. Leave empty for default.",
+    "avatarLabel": "Bot avatar URL",
+    "avatarPlaceholder": "https://example.com/avatar.png",
+    "avatarHint": "A direct image URL for the bot's server avatar. Leave empty for default.",
+    "previewAbout": "ABOUT ME",
+    "previewAboutText": "Your server's bot, configured from the dashboard."
   },
 
   "common": {

@@ -75,7 +75,11 @@ function buildCustomSelect(nativeSelect) {
 
             const icon = document.createElement('span');
             icon.className = 'cs-option-icon';
-            icon.textContent = opt.value ? '#' : '';
+            if (opt.dataset.icon) {
+                icon.textContent = opt.dataset.icon;
+            } else if (opt.value && !opt.dataset.noicon) {
+                icon.textContent = '#';
+            }
             
             const label = document.createElement('span');
             label.className = 'cs-option-label';

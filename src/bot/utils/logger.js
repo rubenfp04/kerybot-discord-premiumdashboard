@@ -124,30 +124,45 @@ const logger = {
 };
 
 async function checkForUpdates(repoUrl) {
-    if (!repoUrl) return;
+    if (!repoUrl) {
+        logger.info('VER', `Current version: v${pkg.version}`);
+        return;
+    }
 
     try {
         const https = require('https');
 
         const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
-        if (!match) return;
+        if (!match) {
+            logger.info('VER', `Current version: v${pkg.version}`);
+            return;
+        }
 
         const [, owner, repo] = match;
         const apiUrl = `https://api.github.com/repos/${owner}/${repo.replace('.git', '')}/releases/latest`;
 
+        const headers = { 'User-Agent': 'kerybot' };
+        if (process.env.GITHUB_TOKEN) {
+            headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+        }
+
         const data = await new Promise((resolve, reject) => {
-            https.get(apiUrl, { headers: { 'User-Agent': 'kerybot' } }, (res) => {
+            https.get(apiUrl, { headers }, (res) => {
                 let body = '';
                 res.on('data', chunk => body += chunk);
                 res.on('end', () => {
-                    if (res.statusCode === 200) resolve(JSON.parse(body));
-                    else resolve(null);
+                    if (res.statusCode === 200) {
+                        try { resolve(JSON.parse(body)); }
+                        catch { resolve(null); }
+                    } else {
+                        resolve(null);
+                    }
                 });
             }).on('error', reject);
         });
 
         if (!data?.tag_name) {
-            logger.info('VER', `Current version: v${pkg.version}`);
+            logger.warn('VER', `Could not check for updates (v${pkg.version})`);
             return;
         }
 
@@ -159,10 +174,10 @@ async function checkForUpdates(repoUrl) {
             logger.info('UPDATE', `Download: ${c.cyan}${c.bold}${data.html_url}${c.reset}`);
             logger.divider();
         } else {
-            logger.success('UPDATE', `You're using the latest version (v${pkg.version})`);
+            logger.success('VER', `Up to date (v${pkg.version})`);
         }
-    } catch {
-        logger.info('VER', `Current version: v${pkg.version}`);
+    } catch (err) {
+        logger.warn('VER', `Update check failed (v${pkg.version})`);
     }
 }
 

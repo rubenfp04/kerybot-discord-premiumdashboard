@@ -30,6 +30,7 @@ router.post('/guilds/:guildId/settings', isAuthenticated, hasGuildPermission, as
         'welcome_card_channel', 'welcome_dm_message',
         'leave_channel', 'leave_message', 'log_channel',
         'autorole', 'mod_role', 'language',
+        'bot_nickname', 'bot_avatar',
         'levels_channel', 'levels_message', 'levels_multiplier', 'levels_type',
         'starboard_channel', 'starboard_threshold', 'starboard_emoji',
         'tickets_category', 'tickets_log_channel', 'tickets_message', 'tickets_support_role',
