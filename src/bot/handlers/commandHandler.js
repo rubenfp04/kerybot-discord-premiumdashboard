@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { logger } = require('../utils/logger');
 
 async function loadCommands(client) {
     const commandsPath = path.join(__dirname, '..', 'commands');
@@ -17,7 +18,7 @@ async function loadCommands(client) {
             const command = require(path.join(categoryPath, file));
 
             if (!command.data || !command.execute) {
-                console.warn(`[WARN] Comando ${file} le falta data o execute, saltando.`);
+                logger.warn('CMD', `Command ${file} is missing data or execute, skipping.`);
                 continue;
             }
 
@@ -26,13 +27,13 @@ async function loadCommands(client) {
         }
     }
 
-    console.log(`[COMMANDS] ${loaded} comandos cargados.`);
+    logger.success('CMD', `${loaded} commands in ${categories.length} categories`);
 }
 
 function getCommandList(client) {
     const commands = {};
     client.commands.forEach((cmd) => {
-        const cat = cmd.category || 'sin categoría';
+        const cat = cmd.category || 'uncategorized';
         if (!commands[cat]) commands[cat] = [];
         commands[cat].push({
             name: cmd.data.name,

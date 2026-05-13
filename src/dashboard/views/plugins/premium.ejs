@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<%= lang %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium — <%= guild.name %></title>
+    <title><%= t("sidebar.premium") %> — <%= guild.name %></title>
     <%- include('../partials/head') %>
 </head>
 <body>
@@ -15,66 +15,187 @@
         <div class="panel-content-full">
             <div class="premium-page">
                 <div class="premium-header">
-                    <h1><i data-lucide="crown"></i> Mejora tu servidor</h1>
-                    <p>Desbloquea todas las funciones premium de rekybot para tu comunidad</p>
+                    <h1><i data-lucide="crown"></i> <%= t("premium.title") %></h1>
+                    <p><%= t("premium.desc") %></p>
                 </div>
+
+                <% if (settings.premium) { %>
+                    <!-- ESTADO PREMIUM ACTIVO -->
+                    <div class="config-section premium-status-active">
+                        <div class="premium-status-header">
+                            <div class="premium-status-icon">
+                                <i data-lucide="crown" class="icon-lg"></i>
+                            </div>
+                            <div>
+                                <h3>🎉 <%= t("premium.active") %></h3>
+                                <p>
+                                    <%= t('premium.plan') %>: <strong><%= settings.premium_type === 'lifetime' ? t('premium.lifetime') : settings.premium_type === 'yearly' ? t('premium.yearly') : t('premium.monthly') %></strong>
+                                    <% if (settings.premium_until) { %>
+                                        · <%= t('premium.activeUntil') %>: <strong><%= new Date(settings.premium_until).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></strong>
+                                    <% } else { %>
+                                        · <strong><%= t("premium.noExpiration") %></strong>
+                                    <% } %>
+                                </p>
+                            </div>
+                        </div>
+                        <% if (settings.premium_type !== 'lifetime' && settings.stripe_subscription_id) { %>
+                            <button class="btn btn-small btn-danger-outline" id="btn-cancel-sub">
+                                <i data-lucide="x" class="icon-sm"></i> <%= t("premium.cancelSub") %>
+                            </button>
+                        <% } %>
+                    </div>
+                <% } else { %>
+                    <!-- ESTADO FREE -->
+                    <div class="config-section premium-status-free">
+                        <div class="premium-status-header">
+                            <div class="premium-status-icon free">
+                                <i data-lucide="lock" class="icon-lg"></i>
+                            </div>
+                            <div>
+                                <h3><%= t("premium.freePlan") %></h3>
+                                <p><%= t("premium.freeDesc") %></p>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
 
                 <div class="pricing-grid">
                     <div class="pricing-card popular">
-                        <span class="pricing-popular-badge">Más popular</span>
-                        <h3>De por vida</h3>
+                        <span class="pricing-popular-badge"><%= t("premium.mostPopular") %></span>
+                        <h3><%= t("premium.lifetimeTitle") %></h3>
                         <div class="pricing-price">
                             <span class="amount">19,99€</span>
-                            <span class="period">/único pago</span>
+                            <span class="period">/<%= t("premium.lifetimePrice") %></span>
                         </div>
                         <ul class="pricing-features">
-                            <li>Acceso a todos los plugins premium</li>
-                            <li>Sistema de niveles completo</li>
-                            <li>Starboard ilimitado</li>
-                            <li>Tarjetas de bienvenida personalizadas</li>
-                            <li>Roles de reacción ilimitados</li>
-                            <li>Soporte prioritario</li>
-                            <li>Sin pagos recurrentes</li>
+                            <li><%= t("premium.feature1") %></li>
+                            <li><%= t("premium.feature2") %></li>
+                            <li><%= t("premium.feature3") %></li>
+                            <li><%= t("premium.feature4") %></li>
+                            <li><%= t("premium.feature5") %></li>
+                            <li><%= t("premium.feature6") %></li>
+                            <li><%= t("premium.feature7") %></li>
                         </ul>
-                        <button class="btn btn-gold btn-lg">Comprar ahora</button>
+                        <button class="btn btn-gold btn-lg btn-checkout" data-plan="lifetime" <%= settings.premium ? 'disabled' : '' %>>
+                            <%= settings.premium ? t('premium.alreadyPremium') : t('premium.buyNow') %>
+                        </button>
                     </div>
 
                     <div class="pricing-card">
-                        <h3>Anual</h3>
+                        <h3><%= t("premium.yearlyTitle") %></h3>
                         <div class="pricing-price">
                             <span class="amount">1,99€</span>
-                            <span class="period">/mes</span>
+                            <span class="period"><%= t("premium.yearlyPrice") %></span>
                         </div>
                         <ul class="pricing-features">
-                            <li>Acceso a todos los plugins premium</li>
-                            <li>Sistema de niveles completo</li>
-                            <li>Starboard ilimitado</li>
-                            <li>Tarjetas de bienvenida personalizadas</li>
-                            <li>Roles de reacción ilimitados</li>
-                            <li>Ahorra un 60% vs mensual</li>
+                            <li><%= t("premium.feature1") %></li>
+                            <li><%= t("premium.feature2") %></li>
+                            <li><%= t("premium.feature3") %></li>
+                            <li><%= t("premium.feature4") %></li>
+                            <li><%= t("premium.feature5") %></li>
+                            <li><%= t("premium.featureSave") %></li>
                         </ul>
-                        <button class="btn btn-secondary btn-lg">Suscribirse</button>
+                        <button class="btn btn-secondary btn-lg btn-checkout" data-plan="yearly" <%= settings.premium ? 'disabled' : '' %>>
+                            <%= settings.premium ? t('premium.alreadyPremium') : t('premium.subscribe') %>
+                        </button>
                     </div>
 
                     <div class="pricing-card">
-                        <h3>Mensual</h3>
+                        <h3><%= t("premium.monthlyTitle") %></h3>
                         <div class="pricing-price">
                             <span class="amount">4,99€</span>
-                            <span class="period">/mes</span>
+                            <span class="period"><%= t("premium.monthlyPrice") %></span>
                         </div>
                         <ul class="pricing-features">
-                            <li>Acceso a todos los plugins premium</li>
-                            <li>Sistema de niveles completo</li>
-                            <li>Starboard ilimitado</li>
-                            <li>Tarjetas de bienvenida personalizadas</li>
-                            <li>Cancela cuando quieras</li>
+                            <li><%= t("premium.feature1") %></li>
+                            <li><%= t("premium.feature2") %></li>
+                            <li><%= t("premium.feature3") %></li>
+                            <li><%= t("premium.feature4") %></li>
+                            <li><%= t("premium.featureCancel") %></li>
                         </ul>
-                        <button class="btn btn-secondary btn-lg">Suscribirse</button>
+                        <button class="btn btn-secondary btn-lg btn-checkout" data-plan="monthly" <%= settings.premium ? 'disabled' : '' %>>
+                            <%= settings.premium ? t('premium.alreadyPremium') : t('premium.subscribe') %>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>lucide.createIcons();</script>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        // Checkout buttons
+        document.querySelectorAll('.btn-checkout').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (btn.disabled) return;
+                btn.disabled = true;
+                btn.textContent = '<%= t("premium.redirecting") %>';
+
+                try {
+                    const res = await fetch('/stripe/checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ guildId, plan: btn.dataset.plan })
+                    });
+                    const data = await res.json();
+
+                    if (data.url) {
+                        window.location.href = data.url;
+                    } else {
+                        showToast(data.error || '<%= t("common.errorSave") %>', 'error');
+                        btn.disabled = false;
+                        btn.textContent = '<%= t("premium.retry") %>';
+                    }
+                } catch {
+                    showToast('<%= t("common.errorConnection") %>', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '<%= t("premium.retry") %>';
+                }
+            });
+        });
+
+        // Cancel subscription
+        const cancelBtn = document.getElementById('btn-cancel-sub');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', async () => {
+                if (!confirm('<%= t("premium.cancelConfirm") %>')) return;
+
+                cancelBtn.disabled = true;
+                try {
+                    const res = await fetch('/stripe/cancel', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ guildId })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.error || '<%= t("common.errorSave") %>', 'error');
+                        cancelBtn.disabled = false;
+                    }
+                } catch {
+                    showToast('<%= t("common.errorConnection") %>', 'error');
+                    cancelBtn.disabled = false;
+                }
+            });
+        }
+
+        // Success/cancel URL params
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('status') === 'success') {
+            showToast('<%= t("premium.paymentSuccess") %>', 'success');
+            history.replaceState(null, '', window.location.pathname);
+            // reload after a few seconds to reflect PRO status
+            setTimeout(() => window.location.reload(), 4000);
+        } else if (params.get('status') === 'cancelled') {
+            showToast('<%= t("premium.paymentCancelled") %>', 'warning');
+            history.replaceState(null, '', window.location.pathname);
+        }
+    </script>
+    <%- include('../partials/toast') %>
 </body>
 </html>

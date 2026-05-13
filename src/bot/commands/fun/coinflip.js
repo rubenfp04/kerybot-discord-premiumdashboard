@@ -1,20 +1,21 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { createEmbed } = require('../../utils/embeds');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getGuildTranslator } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'diversión',
+    category: 'fun',
     data: new SlashCommandBuilder()
         .setName('coinflip')
-        .setDescription('Lanza una moneda al aire'),
+        .setDescription('Flip a coin'),
 
     async execute(interaction) {
-        const result = Math.random() < 0.5 ? 'Cara 🪙' : 'Cruz 🪙';
+        const t = await getGuildTranslator(interaction.guildId);
+        const result = Math.random() < 0.5 ? t('coinflip.heads') : t('coinflip.tails');
 
-        return interaction.reply({
-            embeds: [createEmbed({
-                title: '🪙 Moneda',
-                description: `La moneda cayó en... **${result}**`
-            })]
-        });
+        const embed = new EmbedBuilder()
+            .setTitle(t('coinflip.title'))
+            .setDescription(t('coinflip.result', { result }))
+            .setColor(0xffab40);
+
+        return interaction.reply({ embeds: [embed] });
     }
 };

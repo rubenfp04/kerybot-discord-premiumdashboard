@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kerybot — Setup Guide</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#0a1422;--bg2:#0e192a;--bg3:#112240;
+            --accent:#00e5ff;--accent2:#7C4DFF;--gold:#ffab40;
+            --text:#c8d6e5;--text2:#8892b0;--white:#e6f1ff;
+            --green:#66bb6a;--red:#ef5350;--border:#1a2a44;
+            --code-bg:#0b1d30;--radius:12px;
+        }
+        body{
+            font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+            background:var(--bg);color:var(--text);line-height:1.7;
+            min-height:100vh;
+        }
+        a{color:var(--accent);text-decoration:none}
+        a:hover{text-decoration:underline}
+        ::selection{background:var(--accent);color:var(--bg)}
+
+        /* ── Top Bar ── */
+        .topbar{
+            position:sticky;top:0;z-index:100;
+            background:rgba(10,20,34,.92);backdrop-filter:blur(12px);
+            border-bottom:1px solid var(--border);padding:0 2rem;
+            display:flex;align-items:center;justify-content:space-between;height:60px;
+        }
+        .topbar-brand{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.15rem;color:var(--white)}
+        .topbar-brand span{color:var(--accent)}
+        .topbar-brand img{width:34px;height:34px;border-radius:50%;object-fit:cover;box-shadow:0 0 16px rgba(124,77,255,.3)}
+
+        /* ── Language Dropdown ── */
+        .lang-dropdown{position:relative}
+        .lang-dropdown-btn{
+            display:flex;align-items:center;gap:.4rem;
+            background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+            padding:.35rem .7rem;color:var(--text2);cursor:pointer;
+            font-size:.85rem;font-weight:500;transition:all .2s;font-family:inherit;
+        }
+        .lang-dropdown-btn:hover{border-color:var(--accent);color:var(--white)}
+        .lang-dropdown-btn .lang-flag{font-size:1.1rem;line-height:1}
+        .lang-dropdown-btn .chevron{
+            display:inline-block;width:0;height:0;
+            border-left:4px solid transparent;border-right:4px solid transparent;
+            border-top:5px solid var(--text2);transition:transform .2s;margin-left:2px;
+        }
+        .lang-dropdown.open .chevron{transform:rotate(180deg)}
+        .lang-dropdown-menu{
+            position:absolute;top:calc(100% + 6px);right:0;
+            background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+            padding:.3rem;min-width:150px;
+            opacity:0;visibility:hidden;transform:translateY(-8px);
+            transition:all .2s;z-index:200;
+            box-shadow:0 8px 30px rgba(0,0,0,.4);
+        }
+        .lang-dropdown.open .lang-dropdown-menu{opacity:1;visibility:visible;transform:translateY(0)}
+        .lang-option{
+            display:flex;align-items:center;gap:.5rem;
+            padding:.5rem .75rem;border-radius:6px;color:var(--text2);
+            font-size:.88rem;transition:all .15s;cursor:pointer;text-decoration:none;
+        }
+        .lang-option:hover{background:rgba(0,229,255,.08);color:var(--white);text-decoration:none}
+        .lang-option.active{color:var(--accent);background:rgba(0,229,255,.08)}
+        .lang-option .lang-flag{font-size:1.15rem;line-height:1}
+
+        /* ── Layout ── */
+        .layout{display:flex;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px)}
+        .sidebar{
+            width:250px;position:sticky;top:60px;height:calc(100vh - 60px);
+            overflow-y:auto;padding:1.5rem 1rem;border-right:1px solid var(--border);
+            flex-shrink:0;
+        }
+        .sidebar-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin:1.2rem 0 .5rem;font-weight:700}
+        .sidebar a{
+            display:flex;align-items:center;gap:.5rem;padding:.45rem .75rem;
+            border-radius:8px;color:var(--text2);font-size:.88rem;transition:all .15s;
+            margin-bottom:2px;
+        }
+        .sidebar a:hover{background:var(--bg3);color:var(--white);text-decoration:none}
+        .sidebar a.active{background:rgba(0,229,255,.1);color:var(--accent)}
+        .sidebar .step-num{
+            width:22px;height:22px;border-radius:50%;background:var(--bg3);
+            display:flex;align-items:center;justify-content:center;font-size:.72rem;
+            font-weight:700;color:var(--text2);flex-shrink:0;
+        }
+        .sidebar a.active .step-num{background:var(--accent);color:var(--bg)}
+        .main{flex:1;padding:2rem 3rem 4rem;max-width:850px;overflow-x:hidden}
+
+        /* ── Hero ── */
+        .hero-guide{
+            text-align:center;padding:3rem 0 2.5rem;
+            border-bottom:1px solid var(--border);margin-bottom:2.5rem;
+        }
+        .hero-guide h1{font-size:2.4rem;color:var(--white);margin-bottom:.5rem}
+        .hero-guide h1 span{color:var(--accent)}
+        .hero-guide p{font-size:1.1rem;color:var(--text2);max-width:600px;margin:0 auto}
+        .badge-version{
+            display:inline-block;background:var(--bg3);color:var(--accent);
+            padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:600;
+            margin-top:1rem;border:1px solid var(--border);
+        }
+
+        /* ── Sections ── */
+        .section{margin-bottom:3rem;scroll-margin-top:80px}
+        .section h2{
+            font-size:1.5rem;color:var(--white);margin-bottom:.3rem;
+            display:flex;align-items:center;gap:.6rem;
+        }
+        .section h2 .icon{
+            width:36px;height:36px;border-radius:10px;
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.1rem;flex-shrink:0;
+        }
+        .section h2 .icon.blue{background:rgba(0,229,255,.12);color:var(--accent)}
+        .section h2 .icon.purple{background:rgba(124,77,255,.12);color:var(--accent2)}
+        .section h2 .icon.gold{background:rgba(255,171,64,.12);color:var(--gold)}
+        .section h2 .icon.green{background:rgba(102,187,106,.12);color:var(--green)}
+        .section h2 .icon.red{background:rgba(239,83,80,.12);color:var(--red)}
+        .section-desc{color:var(--text2);margin-bottom:1.5rem;font-size:.95rem}
+
+        /* ── Steps ── */
+        .step{
+            background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+            padding:1.25rem 1.5rem;margin-bottom:1rem;position:relative;
+        }
+        .step-header{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem}
+        .step-badge{
+            width:28px;height:28px;border-radius:50%;background:var(--accent);
+            color:var(--bg);display:flex;align-items:center;justify-content:center;
+            font-weight:800;font-size:.82rem;flex-shrink:0;
+        }
+        .step-header h3{font-size:1.05rem;color:var(--white)}
+        .step p{color:var(--text);font-size:.92rem;margin-bottom:.5rem}
+
+        /* ── Code Blocks ── */
+        pre{
+            background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+            padding:1rem 1.25rem;overflow-x:auto;margin:.75rem 0;font-size:.85rem;
+            position:relative;
+        }
+        pre code{color:var(--accent);font-family:'Cascadia Code','Fira Code','Consolas',monospace}
+        .copy-btn{
+            position:absolute;top:8px;right:8px;background:var(--bg3);border:1px solid var(--border);
+            color:var(--text2);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;
+            transition:all .2s;
+        }
+        .copy-btn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+        code{
+            background:var(--code-bg);padding:2px 7px;border-radius:5px;font-size:.88em;
+            font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--accent);
+        }
+
+        /* ── Tables ── */
+        .table-wrap{overflow-x:auto;margin:.75rem 0}
+        table{width:100%;border-collapse:collapse;font-size:.9rem}
+        th{
+            text-align:left;padding:.6rem 1rem;background:var(--bg3);color:var(--white);
+            font-weight:600;border-bottom:2px solid var(--border);font-size:.82rem;
+            text-transform:uppercase;letter-spacing:.5px;
+        }
+        td{padding:.55rem 1rem;border-bottom:1px solid var(--border);color:var(--text)}
+        tr:hover td{background:rgba(0,229,255,.03)}
+
+        /* ── Callouts ── */
+        .callout{
+            border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0;
+            display:flex;gap:.75rem;font-size:.9rem;
+        }
+        .callout-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+        .callout.info{background:rgba(0,229,255,.06);border-left:3px solid var(--accent)}
+        .callout.warn{background:rgba(255,171,64,.06);border-left:3px solid var(--gold)}
+        .callout.danger{background:rgba(239,83,80,.06);border-left:3px solid var(--red)}
+        .callout.success{background:rgba(102,187,106,.06);border-left:3px solid var(--green)}
+
+        /* ── Feature Cards ── */
+        .feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1rem 0}
+        .feat-card{
+            background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+            padding:1.2rem;transition:border-color .2s;
+        }
+        .feat-card:hover{border-color:var(--accent)}
+        .feat-card h4{color:var(--white);margin-bottom:.4rem;font-size:.95rem;display:flex;align-items:center;gap:.4rem}
+        .feat-card p{color:var(--text2);font-size:.85rem;line-height:1.5}
+        .feat-card .premium-tag{
+            font-size:.65rem;background:linear-gradient(135deg,var(--gold),#ff6d00);
+            color:#000;padding:2px 8px;border-radius:10px;font-weight:700;
+        }
+
+        /* ── File Tree ── */
+        .file-tree{
+            background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);
+            padding:1rem 1.25rem;font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+            font-size:.82rem;line-height:1.8;color:var(--text2);margin:.75rem 0;
+        }
+        .file-tree .folder{color:var(--accent)}
+        .file-tree .file{color:var(--text)}
+        .file-tree .comment{color:var(--text2);opacity:.5;font-style:italic}
+
+        /* ── Footer ── */
+        .guide-footer{
+            text-align:center;padding:2rem 0;margin-top:3rem;
+            border-top:1px solid var(--border);color:var(--text2);font-size:.85rem;
+        }
+        .guide-footer a{color:var(--accent)}
+
+        /* ── Responsive ── */
+        @media(max-width:900px){
+            .sidebar{display:none}
+            .main{padding:1.5rem 1.2rem 3rem}
+        }
+        @media(max-width:600px){
+            .hero-guide h1{font-size:1.8rem}
+            .main{padding:1rem .8rem 2rem}
+            .step{padding:1rem}
+        }
+
+        /* ── Scroll progress ── */
+        .progress-bar{
+            position:fixed;top:60px;left:0;height:3px;
+            background:linear-gradient(90deg,var(--accent),var(--accent2));
+            z-index:99;transition:width .1s;width:0;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <nav class="topbar">
+        <div class="topbar-brand">
+            <img src="src/dashboard/public/img/logo.png" alt="kery"> <span>kerybot</span> Guide
+        </div>
+        <div class="lang-dropdown" id="langDropdown">
+            <button class="lang-dropdown-btn" onclick="this.parentElement.classList.toggle('open')">
+                <span class="lang-flag" id="currentFlag">🇬🇧</span>
+                <span id="currentLangLabel">English</span>
+                <span class="chevron"></span>
+            </button>
+            <div class="lang-dropdown-menu">
+                <a class="lang-option active" data-lang="en" onclick="setLang('en')">
+                    <span class="lang-flag">🇬🇧</span> English
+                </a>
+                <a class="lang-option" data-lang="es" onclick="setLang('es')">
+                    <span class="lang-flag">🇪🇸</span> Español
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout">
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-title" data-i18n="sidebar.start">GETTING STARTED</div>
+            <a href="#requirements"><span class="step-num">1</span> <span data-i18n="nav.requirements">Requirements</span></a>
+            <a href="#installation"><span class="step-num">2</span> <span data-i18n="nav.installation">Installation</span></a>
+            <a href="#discord-app"><span class="step-num">3</span> <span data-i18n="nav.discordApp">Discord App</span></a>
+            <a href="#env-config"><span class="step-num">4</span> <span data-i18n="nav.envConfig">Environment</span></a>
+            <a href="#database"><span class="step-num">5</span> <span data-i18n="nav.database">Database</span></a>
+            <a href="#first-run"><span class="step-num">6</span> <span data-i18n="nav.firstRun">First Run</span></a>
+
+            <div class="sidebar-title" data-i18n="sidebar.config">CONFIGURATION</div>
+            <a href="#plugins"><span class="step-num">7</span> <span data-i18n="nav.plugins">Plugins</span></a>
+            <a href="#i18n"><span class="step-num">8</span> <span data-i18n="nav.i18n">Languages</span></a>
+            <a href="#premium"><span class="step-num">9</span> <span data-i18n="nav.premium">Premium & Stripe</span></a>
+
+            <div class="sidebar-title" data-i18n="sidebar.ref">REFERENCE</div>
+            <a href="#structure"><span class="step-num">📁</span> <span data-i18n="nav.structure">Project Structure</span></a>
+            <a href="#commands"><span class="step-num">⌘</span> <span data-i18n="nav.commands">Commands</span></a>
+            <a href="#troubleshooting"><span class="step-num">🔧</span> <span data-i18n="nav.troubleshooting">Troubleshooting</span></a>
+        </aside>
+
+        <!-- ═══ MAIN ═══ -->
+        <main class="main">
+            <div class="hero-guide">
+                <h1>kerybot <span data-i18n="hero.title">Setup Guide</span></h1>
+                <p data-i18n="hero.desc">A step-by-step guide to install, configure, and run your kerybot instance with the full web dashboard.</p>
+                <div class="badge-version">v1.0.0 — Node.js + Discord.js v14</div>
+            </div>
+
+            <!-- ═══ STEP 1: REQUIREMENTS ═══ -->
+            <section class="section" id="requirements">
+                <h2><span class="icon blue">📋</span> <span data-i18n="req.title">Requirements</span></h2>
+                <p class="section-desc" data-i18n="req.desc">Make sure you have the following installed before starting.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="req.software">Software</th>
+                                <th data-i18n="req.version">Version</th>
+                                <th data-i18n="req.notes">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Node.js</strong></td>
+                                <td>18+</td>
+                                <td data-i18n="req.nodeNote">LTS recommended. Download from nodejs.org</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MongoDB</strong></td>
+                                <td>6+</td>
+                                <td data-i18n="req.mongoNote">Local install or MongoDB Atlas (free tier works)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Git</strong></td>
+                                <td data-i18n="req.any">Any</td>
+                                <td data-i18n="req.gitNote">To clone the repository</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Stripe CLI</strong></td>
+                                <td data-i18n="req.optional">Optional</td>
+                                <td data-i18n="req.stripeNote">Only needed for testing premium payments locally</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout info">
+                    <span class="callout-icon">💡</span>
+                    <div data-i18n="req.tip">On Windows, you can install Node.js and MongoDB via <code>winget</code>:<br><code>winget install OpenJS.NodeJS.LTS</code> and <code>winget install MongoDB.Server</code></div>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 2: INSTALLATION ═══ -->
+            <section class="section" id="installation">
+                <h2><span class="icon blue">📦</span> <span data-i18n="inst.title">Installation</span></h2>
+                <p class="section-desc" data-i18n="inst.desc">Clone the repository and install all dependencies.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">1</span>
+                        <h3 data-i18n="inst.step1Title">Clone the repository</h3>
+                    </div>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>git clone https://github.com/kerybot/kerybot-discord-dashboard.git
+cd kerybot-discord-dashboard</code></pre>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">2</span>
+                        <h3 data-i18n="inst.step2Title">Install dependencies</h3>
+                    </div>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>npm install</code></pre>
+                    <div class="callout info">
+                        <span class="callout-icon">📦</span>
+                        <div data-i18n="inst.step2Note">This installs discord.js, express, mongoose, passport, canvas, stripe, and all other packages automatically.</div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">3</span>
+                        <h3 data-i18n="inst.step3Title">Verify installation</h3>
+                    </div>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>node -e "require('discord.js'); console.log('OK')"</code></pre>
+                    <p data-i18n="inst.step3Note">If you see <code>OK</code>, all core dependencies are installed correctly.</p>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 3: DISCORD APP ═══ -->
+            <section class="section" id="discord-app">
+                <h2><span class="icon purple">🤖</span> <span data-i18n="discord.title">Discord Application Setup</span></h2>
+                <p class="section-desc" data-i18n="discord.desc">Create a Discord application and configure OAuth2 for the dashboard.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">1</span>
+                        <h3 data-i18n="discord.step1Title">Create the application</h3>
+                    </div>
+                    <p data-i18n="discord.step1">Go to <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a> → <strong>New Application</strong> → give it a name → <strong>Create</strong>.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">2</span>
+                        <h3 data-i18n="discord.step2Title">Create the bot</h3>
+                    </div>
+                    <p data-i18n="discord.step2">Go to <strong>Bot</strong> tab → <strong>Add Bot</strong> → Copy the <strong>Token</strong> (you'll need it for .env).</p>
+                    <div class="callout danger">
+                        <span class="callout-icon">🔒</span>
+                        <div data-i18n="discord.step2Warn">Never share your bot token. If it gets leaked, immediately reset it from the Developer Portal.</div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">3</span>
+                        <h3 data-i18n="discord.step3Title">Enable required intents</h3>
+                    </div>
+                    <p data-i18n="discord.step3">In the <strong>Bot</strong> tab, scroll down and enable:</p>
+                    <ul style="margin:.5rem 0 .5rem 1.5rem;color:var(--text)">
+                        <li><strong>Presence Intent</strong></li>
+                        <li><strong>Server Members Intent</strong></li>
+                        <li><strong>Message Content Intent</strong></li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">4</span>
+                        <h3 data-i18n="discord.step4Title">Configure OAuth2</h3>
+                    </div>
+                    <p data-i18n="discord.step4">Go to <strong>OAuth2</strong> → <strong>General</strong>:</p>
+                    <ul style="margin:.5rem 0 .5rem 1.5rem;color:var(--text)">
+                        <li data-i18n="discord.step4a">Copy <strong>Client ID</strong> and <strong>Client Secret</strong></li>
+                        <li data-i18n="discord.step4b">Add redirect URL: <code>http://localhost:3000/auth/callback</code></li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">5</span>
+                        <h3 data-i18n="discord.step5Title">Invite the bot</h3>
+                    </div>
+                    <p data-i18n="discord.step5">Go to <strong>OAuth2</strong> → <strong>URL Generator</strong>:</p>
+                    <ul style="margin:.5rem 0 .5rem 1.5rem;color:var(--text)">
+                        <li data-i18n="discord.step5a">Scopes: <code>bot</code>, <code>applications.commands</code></li>
+                        <li data-i18n="discord.step5b">Permissions: Administrator (or select specific ones)</li>
+                        <li data-i18n="discord.step5c">Copy the generated URL and open it in your browser</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 4: ENV CONFIG ═══ -->
+            <section class="section" id="env-config">
+                <h2><span class="icon gold">⚙️</span> <span data-i18n="env.title">Environment Configuration</span></h2>
+                <p class="section-desc" data-i18n="env.desc">Create a <code>.env</code> file in the project root with your credentials.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">1</span>
+                        <h3 data-i18n="env.step1Title">Create the .env file</h3>
+                    </div>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code># Discord
+BOT_TOKEN=your_bot_token_here
+CLIENT_ID=your_client_id_here
+CLIENT_SECRET=your_client_secret_here
+
+# MongoDB
+MONGO_URI=mongodb://localhost:27017/kerybot
+
+# Dashboard
+DASHBOARD_PORT=3000
+CALLBACK_URL=http://localhost:3000/auth/callback
+SESSION_SECRET=any_random_string_here
+
+# Bot Owner
+OWNER_ID=your_discord_user_id
+
+# Stripe (optional — for premium features)
+STRIPE_SECRET_KEY=sk_test_XXXX
+STRIPE_WEBHOOK_SECRET=whsec_XXXX</code></pre>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="env.variable">Variable</th>
+                                <th data-i18n="env.where">Where to find it</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>BOT_TOKEN</code></td><td data-i18n="env.tokenWhere">Developer Portal → Bot → Token</td></tr>
+                            <tr><td><code>CLIENT_ID</code></td><td data-i18n="env.clientIdWhere">Developer Portal → OAuth2 → Client ID</td></tr>
+                            <tr><td><code>CLIENT_SECRET</code></td><td data-i18n="env.clientSecretWhere">Developer Portal → OAuth2 → Client Secret → Reset</td></tr>
+                            <tr><td><code>OWNER_ID</code></td><td data-i18n="env.ownerWhere">Discord → Settings → Advanced → Enable Developer Mode → Right-click your profile → Copy ID</td></tr>
+                            <tr><td><code>SESSION_SECRET</code></td><td data-i18n="env.sessionWhere">Any random string (e.g., generate with <code>node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code>)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout warn">
+                    <span class="callout-icon">⚠️</span>
+                    <div data-i18n="env.warn">The <code>.env</code> file is included in <code>.gitignore</code>. Never commit it to version control.</div>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 5: DATABASE ═══ -->
+            <section class="section" id="database">
+                <h2><span class="icon green">🗄️</span> <span data-i18n="db.title">Database Setup</span></h2>
+                <p class="section-desc" data-i18n="db.desc">kerybot uses MongoDB to store guild settings, warnings, and user levels.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">A</span>
+                        <h3 data-i18n="db.optionA">Option A: Local MongoDB</h3>
+                    </div>
+                    <p data-i18n="db.optionADesc">If MongoDB is installed locally, make sure the service is running:</p>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code># Windows (run as admin)
+net start MongoDB
+
+# macOS / Linux
+sudo systemctl start mongod</code></pre>
+                    <p data-i18n="db.optionAUri">Your <code>MONGO_URI</code> will be: <code>mongodb://localhost:27017/kerybot</code></p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">B</span>
+                        <h3 data-i18n="db.optionB">Option B: MongoDB Atlas (Cloud)</h3>
+                    </div>
+                    <ol style="margin:.5rem 0 .5rem 1.5rem;color:var(--text);font-size:.92rem">
+                        <li data-i18n="db.atlasStep1">Go to <a href="https://www.mongodb.com/atlas" target="_blank">MongoDB Atlas</a> and create a free account</li>
+                        <li data-i18n="db.atlasStep2">Create a cluster (free M0 tier is enough)</li>
+                        <li data-i18n="db.atlasStep3">Create a database user with a password</li>
+                        <li data-i18n="db.atlasStep4">Whitelist your IP (or use <code>0.0.0.0/0</code> for any IP)</li>
+                        <li data-i18n="db.atlasStep5">Click <strong>Connect</strong> → <strong>Connect your application</strong> → Copy the URI</li>
+                    </ol>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>MONGO_URI=mongodb+srv://username:password@cluster.xxxxx.mongodb.net/kerybot</code></pre>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 6: FIRST RUN ═══ -->
+            <section class="section" id="first-run">
+                <h2><span class="icon blue">🚀</span> <span data-i18n="run.title">First Run</span></h2>
+                <p class="section-desc" data-i18n="run.desc">Register the slash commands and start the bot.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">1</span>
+                        <h3 data-i18n="run.step1Title">Register slash commands</h3>
+                    </div>
+                    <p data-i18n="run.step1Desc">This only needs to be done once (or whenever you add/modify commands):</p>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>node src/bot/deploy-commands.js</code></pre>
+                    <p data-i18n="run.step1Note">You should see: <code>Registering X slash commands...</code> followed by <code>Commands registered successfully.</code></p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">2</span>
+                        <h3 data-i18n="run.step2Title">Start the bot</h3>
+                    </div>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>node index.js</code></pre>
+                    <p data-i18n="run.step2Note">You should see the ASCII banner, system info, database connection, and "Bot Online" section in the console.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">3</span>
+                        <h3 data-i18n="run.step3Title">Open the dashboard</h3>
+                    </div>
+                    <p data-i18n="run.step3Desc">Open <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> in your browser. Click <strong>"Get Started"</strong> to log in with Discord.</p>
+                </div>
+
+                <div class="callout success">
+                    <span class="callout-icon">✅</span>
+                    <div data-i18n="run.success">If you see the landing page with your bot's stats and can log in — congratulations! Your kerybot instance is running.</div>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 7: PLUGINS ═══ -->
+            <section class="section" id="plugins">
+                <h2><span class="icon purple">🧩</span> <span data-i18n="plugins.title">Available Plugins</span></h2>
+                <p class="section-desc" data-i18n="plugins.desc">Each plugin can be enabled/disabled per guild from the dashboard. Here's what each one does:</p>
+
+                <div class="feature-grid">
+                    <div class="feat-card">
+                        <h4>👋 <span data-i18n="plugins.welcome">Welcome</span></h4>
+                        <p data-i18n="plugins.welcomeDesc">Custom welcome messages, canvas cards, DMs to new members.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>🚪 <span data-i18n="plugins.farewell">Farewell</span></h4>
+                        <p data-i18n="plugins.farewellDesc">Send a message when a member leaves the server.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>🛡️ <span data-i18n="plugins.moderation">Moderation</span></h4>
+                        <p data-i18n="plugins.moderationDesc">Ban, kick, warn, clear commands + automod rules (badwords, spam, caps, etc.).</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>📋 <span data-i18n="plugins.logs">Logs</span></h4>
+                        <p data-i18n="plugins.logsDesc">Log moderation actions to a designated channel.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>🎭 <span data-i18n="plugins.autorole">Autorole</span></h4>
+                        <p data-i18n="plugins.autoroleDesc">Automatically assign a role to new members on join.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>🎟️ <span data-i18n="plugins.tickets">Tickets</span></h4>
+                        <p data-i18n="plugins.ticketsDesc">Support ticket system with panels, categories, close messages.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>💡 <span data-i18n="plugins.suggestions">Suggestions</span></h4>
+                        <p data-i18n="plugins.suggestionsDesc">Community suggestions with upvote/downvote and approval channels.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>🎯 <span data-i18n="plugins.reactionRoles">Reaction Roles</span></h4>
+                        <p data-i18n="plugins.reactionRolesDesc">Assign roles when users react to a message with a specific emoji.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>📊 <span data-i18n="plugins.levels">Levels</span> <span class="premium-tag">PREMIUM</span></h4>
+                        <p data-i18n="plugins.levelsDesc">XP system with rank cards, multiplier, level-up announcements.</p>
+                    </div>
+                    <div class="feat-card">
+                        <h4>⭐ <span data-i18n="plugins.starboard">Starboard</span> <span class="premium-tag">PREMIUM</span></h4>
+                        <p data-i18n="plugins.starboardDesc">Highlight popular messages when they receive enough star reactions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 8: I18N ═══ -->
+            <section class="section" id="i18n">
+                <h2><span class="icon blue">🌐</span> <span data-i18n="i18n.title">Language Configuration</span></h2>
+                <p class="section-desc" data-i18n="i18n.desc">kerybot supports English and Spanish for both the dashboard and the bot.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">🖥️</span>
+                        <h3 data-i18n="i18n.dashTitle">Dashboard Language</h3>
+                    </div>
+                    <p data-i18n="i18n.dashDesc">Users can switch languages using the <strong>EN / ES</strong> buttons in the top navigation bar. The preference is saved as a cookie for 1 year.</p>
+                    <p data-i18n="i18n.dashHow">You can also set the language via URL parameter: <code>?lang=en</code> or <code>?lang=es</code></p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">🤖</span>
+                        <h3 data-i18n="i18n.botTitle">Bot Language (per guild)</h3>
+                    </div>
+                    <p data-i18n="i18n.botDesc">Each guild can set its own language from the dashboard settings. Bot responses (embeds, error messages, level-up announcements, etc.) will be in the configured language.</p>
+                    <p data-i18n="i18n.botDefault">Default language: <code>es</code> (Spanish). Can be changed to <code>en</code> (English) from the dashboard.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">📁</span>
+                        <h3 data-i18n="i18n.filesTitle">Locale Files</h3>
+                    </div>
+                    <p data-i18n="i18n.filesDesc">Translation files are JSON files in the <code>locales/</code> directories:</p>
+                    <div class="file-tree">
+                        <span class="folder">src/dashboard/locales/</span><br>
+                        &nbsp;&nbsp;├── <span class="file">en.json</span> <span class="comment">← Dashboard English</span><br>
+                        &nbsp;&nbsp;└── <span class="file">es.json</span> <span class="comment">← Dashboard Spanish</span><br><br>
+                        <span class="folder">src/bot/locales/</span><br>
+                        &nbsp;&nbsp;├── <span class="file">en.json</span> <span class="comment">← Bot English</span><br>
+                        &nbsp;&nbsp;└── <span class="file">es.json</span> <span class="comment">← Bot Spanish</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ STEP 9: PREMIUM ═══ -->
+            <section class="section" id="premium">
+                <h2><span class="icon gold">💎</span> <span data-i18n="prem.title">Premium & Stripe Setup</span></h2>
+                <p class="section-desc" data-i18n="prem.desc">Premium features (Levels, Starboard) are gated behind Stripe payments. The bot auto-creates products and prices on startup.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">1</span>
+                        <h3 data-i18n="prem.step1Title">Create a Stripe account</h3>
+                    </div>
+                    <p data-i18n="prem.step1">Go to <a href="https://dashboard.stripe.com" target="_blank">Stripe Dashboard</a> and create a free account. You can use test mode for development.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">2</span>
+                        <h3 data-i18n="prem.step2Title">Get your API keys</h3>
+                    </div>
+                    <p data-i18n="prem.step2">Go to <strong>Developers</strong> → <strong>API keys</strong>. Copy the <strong>Secret key</strong> (starts with <code>sk_test_</code>) and add it to <code>.env</code> as <code>STRIPE_SECRET_KEY</code>.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">3</span>
+                        <h3 data-i18n="prem.step3Title">Set up webhook (local dev)</h3>
+                    </div>
+                    <p data-i18n="prem.step3Desc">Install the <a href="https://stripe.com/docs/stripe-cli" target="_blank">Stripe CLI</a> and forward webhooks:</p>
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>stripe listen --forward-to localhost:3000/stripe/webhook</code></pre>
+                    <p data-i18n="prem.step3Note">Copy the <code>whsec_...</code> secret shown and add it to <code>.env</code> as <code>STRIPE_WEBHOOK_SECRET</code>.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge">4</span>
+                        <h3 data-i18n="prem.step4Title">Auto-created plans</h3>
+                    </div>
+                    <p data-i18n="prem.step4Desc">When the bot starts, it automatically creates a "kerybot Premium" product with three price tiers:</p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-i18n="prem.plan">Plan</th>
+                                    <th data-i18n="prem.price">Price</th>
+                                    <th data-i18n="prem.type">Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Lifetime</td><td>€19.99</td><td data-i18n="prem.oneTime">One-time</td></tr>
+                                <tr><td>Yearly</td><td>€9.99/yr</td><td data-i18n="prem.recurring">Recurring</td></tr>
+                                <tr><td>Monthly</td><td>€1.99/mo</td><td data-i18n="prem.recurring">Recurring</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="callout info">
+                    <span class="callout-icon">💡</span>
+                    <div data-i18n="prem.noStripe">If you don't set <code>STRIPE_SECRET_KEY</code> or leave it as <code>sk_test_XXXX</code>, Stripe is disabled. The bot works fine — premium plugins just stay locked.</div>
+                </div>
+            </section>
+
+            <!-- ═══ PROJECT STRUCTURE ═══ -->
+            <section class="section" id="structure">
+                <h2><span class="icon blue">📁</span> <span data-i18n="struct.title">Project Structure</span></h2>
+                <p class="section-desc" data-i18n="struct.desc">Overview of the project's directory layout.</p>
+
+                <div class="file-tree">
+                    <span class="file">index.js</span> <span class="comment">← Entry point</span><br>
+                    <span class="file">.env</span> <span class="comment">← Secrets (not committed)</span><br>
+                    <span class="folder">config/</span><br>
+                    &nbsp;&nbsp;└── <span class="file">config.example.js</span> <span class="comment">← Feature toggles</span><br>
+                    <span class="folder">src/</span><br>
+                    &nbsp;&nbsp;<span class="folder">bot/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">commands/</span> <span class="comment">← Slash commands</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">moderation/</span> <span class="comment">← ban, kick, warn, clear</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">fun/</span> <span class="comment">← 8ball, coinflip, dado</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">utility/</span> <span class="comment">← ping, avatar, rank, serverinfo, userinfo</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="folder">config/</span> <span class="comment">← autorole, logs, welcome</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">events/</span> <span class="comment">← guildMemberAdd, messageCreate, ready...</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">handlers/</span> <span class="comment">← Command & event loaders</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">utils/</span> <span class="comment">← embeds, logger, welcomeCard, rankCard, i18n</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">locales/</span> <span class="comment">← en.json, es.json (bot translations)</span><br>
+                    &nbsp;&nbsp;<span class="folder">dashboard/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">server.js</span> <span class="comment">← Express server</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">i18n.js</span> <span class="comment">← i18n middleware</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">locales/</span> <span class="comment">← en.json, es.json (dashboard translations)</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">routes/</span> <span class="comment">← auth, dashboard, api, stripe</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">views/</span> <span class="comment">← EJS templates</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">public/css/</span> <span class="comment">← Stylesheets</span><br>
+                    &nbsp;&nbsp;<span class="folder">database/</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">db.js</span> <span class="comment">← MongoDB connection</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">models/</span> <span class="comment">← guild.js (settings, warnings, levels)</span>
+                </div>
+            </section>
+
+            <!-- ═══ COMMANDS ═══ -->
+            <section class="section" id="commands">
+                <h2><span class="icon purple">⌘</span> <span data-i18n="cmds.title">Slash Commands</span></h2>
+                <p class="section-desc" data-i18n="cmds.desc">All commands are slash commands registered globally.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="cmds.command">Command</th>
+                                <th data-i18n="cmds.category">Category</th>
+                                <th data-i18n="cmds.description">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>/ban</code></td><td>Moderation</td><td data-i18n="cmds.ban">Ban a user from the server</td></tr>
+                            <tr><td><code>/kick</code></td><td>Moderation</td><td data-i18n="cmds.kick">Kick a user from the server</td></tr>
+                            <tr><td><code>/warn</code></td><td>Moderation</td><td data-i18n="cmds.warn">Add, list, or clear warnings for a user</td></tr>
+                            <tr><td><code>/clear</code></td><td>Moderation</td><td data-i18n="cmds.clear">Delete messages in bulk</td></tr>
+                            <tr><td><code>/ping</code></td><td>Utility</td><td data-i18n="cmds.ping">Check bot latency</td></tr>
+                            <tr><td><code>/avatar</code></td><td>Utility</td><td data-i18n="cmds.avatar">Show a user's avatar</td></tr>
+                            <tr><td><code>/rank</code></td><td>Utility</td><td data-i18n="cmds.rank">Show your XP rank card</td></tr>
+                            <tr><td><code>/serverinfo</code></td><td>Utility</td><td data-i18n="cmds.serverinfo">Show server information</td></tr>
+                            <tr><td><code>/userinfo</code></td><td>Utility</td><td data-i18n="cmds.userinfo">Show user information</td></tr>
+                            <tr><td><code>/8ball</code></td><td>Fun</td><td data-i18n="cmds.8ball">Ask the magic 8-ball</td></tr>
+                            <tr><td><code>/coinflip</code></td><td>Fun</td><td data-i18n="cmds.coinflip">Flip a coin</td></tr>
+                            <tr><td><code>/dado</code></td><td>Fun</td><td data-i18n="cmds.dado">Roll dice</td></tr>
+                            <tr><td><code>/autorole</code></td><td>Config</td><td data-i18n="cmds.autorole">Configure autorole settings</td></tr>
+                            <tr><td><code>/logs</code></td><td>Config</td><td data-i18n="cmds.logs">Configure log channel</td></tr>
+                            <tr><td><code>/welcome</code></td><td>Config</td><td data-i18n="cmds.welcome">Configure welcome messages</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ═══ TROUBLESHOOTING ═══ -->
+            <section class="section" id="troubleshooting">
+                <h2><span class="icon red">🔧</span> <span data-i18n="trouble.title">Troubleshooting</span></h2>
+                <p class="section-desc" data-i18n="trouble.desc">Common issues and how to fix them.</p>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge" style="background:var(--red)">!</span>
+                        <h3 data-i18n="trouble.q1">Bot won't start — "TOKEN_INVALID"</h3>
+                    </div>
+                    <p data-i18n="trouble.a1">Your <code>BOT_TOKEN</code> in <code>.env</code> is wrong or expired. Go to the Developer Portal → Bot → Reset Token and update the value.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge" style="background:var(--red)">!</span>
+                        <h3 data-i18n="trouble.q2">Dashboard login redirects to home</h3>
+                    </div>
+                    <p data-i18n="trouble.a2">Check that <code>CALLBACK_URL</code> in <code>.env</code> matches exactly what's in the Developer Portal → OAuth2 → Redirects. Including the protocol and port.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge" style="background:var(--red)">!</span>
+                        <h3 data-i18n="trouble.q3">Commands not showing in Discord</h3>
+                    </div>
+                    <p data-i18n="trouble.a3">Run <code>node src/bot/deploy-commands.js</code> again. Global commands can take up to 1 hour to propagate. For instant testing, use guild-specific commands.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge" style="background:var(--red)">!</span>
+                        <h3 data-i18n="trouble.q4">Canvas errors on npm install</h3>
+                    </div>
+                    <p data-i18n="trouble.a4">The <code>canvas</code> package requires build tools. On Windows: <code>npm install --global windows-build-tools</code>. On Linux: <code>sudo apt-get install build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev</code></p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge" style="background:var(--red)">!</span>
+                        <h3 data-i18n="trouble.q5">MongoDB connection refused</h3>
+                    </div>
+                    <p data-i18n="trouble.a5">Make sure MongoDB is running. On Windows: <code>net start MongoDB</code>. Or use MongoDB Atlas (cloud) — see the Database section above.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-header">
+                        <span class="step-badge" style="background:var(--red)">!</span>
+                        <h3 data-i18n="trouble.q6">Stripe webhook not activating premium</h3>
+                    </div>
+                    <p data-i18n="trouble.a6">Make sure the Stripe CLI is forwarding to the correct URL: <code>stripe listen --forward-to localhost:3000/stripe/webhook</code>. Also verify <code>STRIPE_WEBHOOK_SECRET</code> in <code>.env</code> matches the CLI output.</p>
+                </div>
+            </section>
+
+            <!-- ═══ FOOTER ═══ -->
+            <div class="guide-footer">
+                <p>Made with ❤️ by <a href="https://github.com/rfernandez" target="_blank">rfernandez</a></p>
+                <p style="margin-top:.3rem;font-size:.8rem;color:var(--text2)" data-i18n="footer.text">kerybot — Open source Discord bot with web dashboard</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════
+    //  TRANSLATIONS
+    // ═══════════════════════════════════════════
+    const translations = {
+        es: {
+            // Sidebar
+            "sidebar.start": "PRIMEROS PASOS",
+            "sidebar.config": "CONFIGURACIÓN",
+            "sidebar.ref": "REFERENCIA",
+            "nav.requirements": "Requisitos",
+            "nav.installation": "Instalación",
+            "nav.discordApp": "App de Discord",
+            "nav.envConfig": "Variables de entorno",
+            "nav.database": "Base de datos",
+            "nav.firstRun": "Primera ejecución",
+            "nav.plugins": "Plugins",
+            "nav.i18n": "Idiomas",
+            "nav.premium": "Premium y Stripe",
+            "nav.structure": "Estructura del proyecto",
+            "nav.commands": "Comandos",
+            "nav.troubleshooting": "Solución de problemas",
+
+            // Hero
+            "hero.title": "Guía de instalación",
+            "hero.desc": "Una guía paso a paso para instalar, configurar y ejecutar tu instancia de kerybot con el panel web completo.",
+
+            // Requirements
+            "req.title": "Requisitos",
+            "req.desc": "Asegúrate de tener lo siguiente instalado antes de comenzar.",
+            "req.software": "Software",
+            "req.version": "Versión",
+            "req.notes": "Notas",
+            "req.nodeNote": "LTS recomendado. Descargar de nodejs.org",
+            "req.mongoNote": "Instalación local o MongoDB Atlas (el tier gratuito funciona)",
+            "req.any": "Cualquiera",
+            "req.gitNote": "Para clonar el repositorio",
+            "req.optional": "Opcional",
+            "req.stripeNote": "Solo necesario para probar pagos premium localmente",
+            "req.tip": "En Windows, puedes instalar Node.js y MongoDB via <code>winget</code>:<br><code>winget install OpenJS.NodeJS.LTS</code> y <code>winget install MongoDB.Server</code>",
+
+            // Installation
+            "inst.title": "Instalación",
+            "inst.desc": "Clona el repositorio e instala todas las dependencias.",
+            "inst.step1Title": "Clonar el repositorio",
+            "inst.step2Title": "Instalar dependencias",
+            "inst.step2Note": "Esto instala discord.js, express, mongoose, passport, canvas, stripe y todos los demás paquetes automáticamente.",
+            "inst.step3Title": "Verificar la instalación",
+            "inst.step3Note": "Si ves <code>OK</code>, todas las dependencias principales están instaladas correctamente.",
+
+            // Discord App
+            "discord.title": "Configuración de la aplicación Discord",
+            "discord.desc": "Crea una aplicación de Discord y configura OAuth2 para el panel.",
+            "discord.step1Title": "Crear la aplicación",
+            "discord.step1": "Ve a <a href='https://discord.com/developers/applications' target='_blank'>Discord Developer Portal</a> → <strong>New Application</strong> → ponle un nombre → <strong>Create</strong>.",
+            "discord.step2Title": "Crear el bot",
+            "discord.step2": "Ve a la pestaña <strong>Bot</strong> → <strong>Add Bot</strong> → Copia el <strong>Token</strong> (lo necesitarás para .env).",
+            "discord.step2Warn": "Nunca compartas tu token de bot. Si se filtra, resetéalo inmediatamente desde el Developer Portal.",
+            "discord.step3Title": "Activar intents necesarios",
+            "discord.step3": "En la pestaña <strong>Bot</strong>, baja y activa:",
+            "discord.step4Title": "Configurar OAuth2",
+            "discord.step4": "Ve a <strong>OAuth2</strong> → <strong>General</strong>:",
+            "discord.step4a": "Copia el <strong>Client ID</strong> y <strong>Client Secret</strong>",
+            "discord.step4b": "Añade la URL de redirección: <code>http://localhost:3000/auth/callback</code>",
+            "discord.step5Title": "Invitar al bot",
+            "discord.step5": "Ve a <strong>OAuth2</strong> → <strong>URL Generator</strong>:",
+            "discord.step5a": "Scopes: <code>bot</code>, <code>applications.commands</code>",
+            "discord.step5b": "Permisos: Administrador (o selecciona permisos específicos)",
+            "discord.step5c": "Copia la URL generada y ábrela en tu navegador",
+
+            // Env
+            "env.title": "Configuración de variables de entorno",
+            "env.desc": "Crea un archivo <code>.env</code> en la raíz del proyecto con tus credenciales.",
+            "env.step1Title": "Crear el archivo .env",
+            "env.variable": "Variable",
+            "env.where": "Dónde encontrarla",
+            "env.tokenWhere": "Developer Portal → Bot → Token",
+            "env.clientIdWhere": "Developer Portal → OAuth2 → Client ID",
+            "env.clientSecretWhere": "Developer Portal → OAuth2 → Client Secret → Reset",
+            "env.ownerWhere": "Discord → Ajustes → Avanzado → Activar modo desarrollador → Clic derecho en tu perfil → Copiar ID",
+            "env.sessionWhere": "Cualquier string aleatorio (ej: genera con <code>node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"</code>)",
+            "env.warn": "El archivo <code>.env</code> está incluido en <code>.gitignore</code>. Nunca lo subas al control de versiones.",
+
+            // Database
+            "db.title": "Configuración de base de datos",
+            "db.desc": "kerybot usa MongoDB para almacenar configuraciones de servidores, advertencias y niveles de usuario.",
+            "db.optionA": "Opción A: MongoDB local",
+            "db.optionADesc": "Si MongoDB está instalado localmente, asegúrate de que el servicio esté corriendo:",
+            "db.optionAUri": "Tu <code>MONGO_URI</code> será: <code>mongodb://localhost:27017/kerybot</code>",
+            "db.optionB": "Opción B: MongoDB Atlas (nube)",
+            "db.atlasStep1": "Ve a <a href='https://www.mongodb.com/atlas' target='_blank'>MongoDB Atlas</a> y crea una cuenta gratuita",
+            "db.atlasStep2": "Crea un cluster (el tier gratuito M0 es suficiente)",
+            "db.atlasStep3": "Crea un usuario de base de datos con contraseña",
+            "db.atlasStep4": "Permite tu IP (o usa <code>0.0.0.0/0</code> para cualquier IP)",
+            "db.atlasStep5": "Haz clic en <strong>Connect</strong> → <strong>Connect your application</strong> → Copia la URI",
+
+            // First Run
+            "run.title": "Primera ejecución",
+            "run.desc": "Registra los comandos slash e inicia el bot.",
+            "run.step1Title": "Registrar comandos slash",
+            "run.step1Desc": "Solo necesitas hacer esto una vez (o cuando añadas/modifiques comandos):",
+            "run.step1Note": "Deberías ver: <code>Registering X slash commands...</code> seguido de <code>Commands registered successfully.</code>",
+            "run.step2Title": "Iniciar el bot",
+            "run.step2Note": "Deberías ver el banner ASCII, info del sistema, conexión a la base de datos y la sección \"Bot Online\" en la consola.",
+            "run.step3Title": "Abrir el dashboard",
+            "run.step3Desc": "Abre <a href='http://localhost:3000' target='_blank'>http://localhost:3000</a> en tu navegador. Haz clic en <strong>\"Get Started\"</strong> para iniciar sesión con Discord.",
+            "run.success": "Si ves la landing page con las estadísticas de tu bot y puedes iniciar sesión — ¡felicidades! Tu instancia de kerybot está funcionando.",
+
+            // Plugins
+            "plugins.title": "Plugins disponibles",
+            "plugins.desc": "Cada plugin se puede activar/desactivar por servidor desde el dashboard. Esto es lo que hace cada uno:",
+            "plugins.welcome": "Bienvenida",
+            "plugins.welcomeDesc": "Mensajes de bienvenida personalizados, tarjetas canvas, DMs a nuevos miembros.",
+            "plugins.farewell": "Despedida",
+            "plugins.farewellDesc": "Envía un mensaje cuando un miembro abandona el servidor.",
+            "plugins.moderation": "Moderación",
+            "plugins.moderationDesc": "Comandos ban, kick, warn, clear + reglas de automod (palabras, spam, mayúsculas, etc.).",
+            "plugins.logs": "Registros",
+            "plugins.logsDesc": "Registra acciones de moderación en un canal designado.",
+            "plugins.autorole": "Autorole",
+            "plugins.autoroleDesc": "Asigna automáticamente un rol a los nuevos miembros al entrar.",
+            "plugins.tickets": "Tickets",
+            "plugins.ticketsDesc": "Sistema de tickets de soporte con paneles, categorías y mensajes de cierre.",
+            "plugins.suggestions": "Sugerencias",
+            "plugins.suggestionsDesc": "Sugerencias de la comunidad con votos positivos/negativos y canales de aprobación.",
+            "plugins.reactionRoles": "Roles por reacción",
+            "plugins.reactionRolesDesc": "Asigna roles cuando los usuarios reaccionan a un mensaje con un emoji específico.",
+            "plugins.levels": "Niveles",
+            "plugins.levelsDesc": "Sistema de XP con tarjetas de rango, multiplicador, anuncios de subida de nivel.",
+            "plugins.starboard": "Starboard",
+            "plugins.starboardDesc": "Destaca mensajes populares cuando reciben suficientes reacciones de estrella.",
+
+            // i18n
+            "i18n.title": "Configuración de idioma",
+            "i18n.desc": "kerybot soporta inglés y español tanto para el dashboard como para el bot.",
+            "i18n.dashTitle": "Idioma del Dashboard",
+            "i18n.dashDesc": "Los usuarios pueden cambiar de idioma usando los botones <strong>EN / ES</strong> en la barra de navegación superior. La preferencia se guarda como cookie por 1 año.",
+            "i18n.dashHow": "También puedes establecer el idioma vía parámetro URL: <code>?lang=en</code> o <code>?lang=es</code>",
+            "i18n.botTitle": "Idioma del Bot (por servidor)",
+            "i18n.botDesc": "Cada servidor puede establecer su propio idioma desde los ajustes del dashboard. Las respuestas del bot (embeds, errores, anuncios de nivel, etc.) estarán en el idioma configurado.",
+            "i18n.botDefault": "Idioma por defecto: <code>es</code> (Español). Se puede cambiar a <code>en</code> (Inglés) desde el dashboard.",
+            "i18n.filesTitle": "Archivos de idioma",
+            "i18n.filesDesc": "Los archivos de traducción son JSON en los directorios <code>locales/</code>:",
+
+            // Premium
+            "prem.title": "Premium y configuración de Stripe",
+            "prem.desc": "Las funciones premium (Niveles, Starboard) requieren pago via Stripe. El bot crea automáticamente los productos y precios al iniciar.",
+            "prem.step1Title": "Crear una cuenta de Stripe",
+            "prem.step1": "Ve a <a href='https://dashboard.stripe.com' target='_blank'>Stripe Dashboard</a> y crea una cuenta gratuita. Puedes usar el modo de prueba para desarrollo.",
+            "prem.step2Title": "Obtener tus claves API",
+            "prem.step2": "Ve a <strong>Developers</strong> → <strong>API keys</strong>. Copia la <strong>Secret key</strong> (empieza con <code>sk_test_</code>) y añádela a <code>.env</code> como <code>STRIPE_SECRET_KEY</code>.",
+            "prem.step3Title": "Configurar webhook (desarrollo local)",
+            "prem.step3Desc": "Instala el <a href='https://stripe.com/docs/stripe-cli' target='_blank'>Stripe CLI</a> y redirige los webhooks:",
+            "prem.step3Note": "Copia el secreto <code>whsec_...</code> que aparece y añádelo a <code>.env</code> como <code>STRIPE_WEBHOOK_SECRET</code>.",
+            "prem.step4Title": "Planes creados automáticamente",
+            "prem.step4Desc": "Cuando el bot inicia, crea automáticamente un producto \"kerybot Premium\" con tres planes de precio:",
+            "prem.plan": "Plan",
+            "prem.price": "Precio",
+            "prem.type": "Tipo",
+            "prem.oneTime": "Pago único",
+            "prem.recurring": "Recurrente",
+            "prem.noStripe": "Si no configuras <code>STRIPE_SECRET_KEY</code> o lo dejas como <code>sk_test_XXXX</code>, Stripe se desactiva. El bot funciona normalmente — los plugins premium simplemente quedan bloqueados.",
+
+            // Structure
+            "struct.title": "Estructura del proyecto",
+            "struct.desc": "Vista general del layout de directorios del proyecto.",
+
+            // Commands
+            "cmds.title": "Comandos Slash",
+            "cmds.desc": "Todos los comandos son slash commands registrados globalmente.",
+            "cmds.command": "Comando",
+            "cmds.category": "Categoría",
+            "cmds.description": "Descripción",
+            "cmds.ban": "Banear a un usuario del servidor",
+            "cmds.kick": "Expulsar a un usuario del servidor",
+            "cmds.warn": "Añadir, listar o borrar advertencias de un usuario",
+            "cmds.clear": "Borrar mensajes en masa",
+            "cmds.ping": "Comprobar la latencia del bot",
+            "cmds.avatar": "Mostrar el avatar de un usuario",
+            "cmds.rank": "Mostrar tu tarjeta de rango XP",
+            "cmds.serverinfo": "Mostrar información del servidor",
+            "cmds.userinfo": "Mostrar información del usuario",
+            "cmds.8ball": "Pregúntale a la bola mágica",
+            "cmds.coinflip": "Lanzar una moneda",
+            "cmds.dado": "Lanzar dados",
+            "cmds.autorole": "Configurar ajustes de autorole",
+            "cmds.logs": "Configurar canal de registros",
+            "cmds.welcome": "Configurar mensajes de bienvenida",
+
+            // Troubleshooting
+            "trouble.title": "Solución de problemas",
+            "trouble.desc": "Problemas comunes y cómo solucionarlos.",
+            "trouble.q1": "El bot no arranca — \"TOKEN_INVALID\"",
+            "trouble.a1": "Tu <code>BOT_TOKEN</code> en <code>.env</code> es incorrecto o ha expirado. Ve al Developer Portal → Bot → Reset Token y actualiza el valor.",
+            "trouble.q2": "El login del dashboard redirige al inicio",
+            "trouble.a2": "Comprueba que <code>CALLBACK_URL</code> en <code>.env</code> coincida exactamente con lo que hay en el Developer Portal → OAuth2 → Redirects. Incluyendo el protocolo y el puerto.",
+            "trouble.q3": "Los comandos no aparecen en Discord",
+            "trouble.a3": "Ejecuta <code>node src/bot/deploy-commands.js</code> de nuevo. Los comandos globales pueden tardar hasta 1 hora en propagarse. Para probar al instante, usa comandos de servidor.",
+            "trouble.q4": "Errores de Canvas en npm install",
+            "trouble.a4": "El paquete <code>canvas</code> requiere herramientas de compilación. En Windows: <code>npm install --global windows-build-tools</code>. En Linux: <code>sudo apt-get install build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev</code>",
+            "trouble.q5": "Conexión a MongoDB rechazada",
+            "trouble.a5": "Asegúrate de que MongoDB esté corriendo. En Windows: <code>net start MongoDB</code>. O usa MongoDB Atlas (nube) — mira la sección de Base de datos arriba.",
+            "trouble.q6": "El webhook de Stripe no activa premium",
+            "trouble.a6": "Asegúrate de que el CLI de Stripe redirige a la URL correcta: <code>stripe listen --forward-to localhost:3000/stripe/webhook</code>. También verifica que <code>STRIPE_WEBHOOK_SECRET</code> en <code>.env</code> coincida con la salida del CLI.",
+
+            // Footer
+            "footer.text": "kerybot — Bot de Discord open source con panel web"
+        }
+    };
+
+    let currentLang = 'en';
+
+    function setLang(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+
+        // Update dropdown button
+        document.getElementById('currentFlag').textContent = lang === 'es' ? '🇪🇸' : '🇬🇧';
+        document.getElementById('currentLangLabel').textContent = lang === 'es' ? 'Español' : 'English';
+
+        // Update active state in menu
+        document.querySelectorAll('.lang-option').forEach(opt => {
+            opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
+        });
+
+        // Close dropdown
+        document.getElementById('langDropdown').classList.remove('open');
+
+        // Apply translations
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (lang === 'en') {
+                // Restore original English content
+                if (el._originalHTML) el.innerHTML = el._originalHTML;
+            } else if (translations[lang] && translations[lang][key]) {
+                // Save original if not saved
+                if (!el._originalHTML) el._originalHTML = el.innerHTML;
+                el.innerHTML = translations[lang][key];
+            }
+        });
+
+        // Update copy buttons
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.textContent = lang === 'es' ? 'Copiar' : 'Copy';
+        });
+    }
+
+    // ═══ Copy to clipboard ═══
+    function copyCode(btn) {
+        const code = btn.parentElement.querySelector('code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const original = btn.textContent;
+            btn.textContent = currentLang === 'es' ? '¡Copiado!' : 'Copied!';
+            btn.style.background = 'var(--green)';
+            btn.style.borderColor = 'var(--green)';
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.style.background = '';
+                btn.style.borderColor = '';
+            }, 1500);
+        });
+    }
+
+    // ═══ Scroll progress bar ═══
+    window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+    });
+
+    // ═══ Sidebar active link ═══
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(a => a.classList.remove('active'));
+                const active = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(s => observer.observe(s));
+
+    // ═══ Smooth scroll ═══
+    document.querySelectorAll('.sidebar a').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // ═══ Save original English content ═══
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el._originalHTML = el.innerHTML;
+    });
+
+    // ═══ Close dropdown on outside click ═══
+    document.addEventListener('click', e => {
+        const dd = document.getElementById('langDropdown');
+        if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
+    </script>
+</body>
+</html>

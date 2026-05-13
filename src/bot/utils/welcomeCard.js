@@ -2,13 +2,13 @@ const { createCanvas, loadImage } = require('canvas');
 const { AttachmentBuilder } = require('discord.js');
 
 /**
- * Genera una tarjeta de bienvenida como imagen.
+ * Generates a welcome card as an image.
  * @param {Object} options
- * @param {string} options.username - Nombre del usuario
- * @param {string} options.avatarURL - URL del avatar
- * @param {number} options.memberCount - Número de miembro
- * @param {string} [options.backgroundURL] - URL de imagen de fondo
- * @param {string} [options.text] - Texto personalizado (premium)
+ * @param {string} options.username - Username
+ * @param {string} options.avatarURL - Avatar URL
+ * @param {number} options.memberCount - Member number
+ * @param {string} [options.backgroundURL] - Background image URL
+ * @param {string} [options.text] - Custom text (premium)
  * @returns {Promise<AttachmentBuilder>}
  */
 async function generateWelcomeCard({ username, avatarURL, memberCount, backgroundURL, text }) {
@@ -17,33 +17,33 @@ async function generateWelcomeCard({ username, avatarURL, memberCount, backgroun
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    // ── Fondo ──
+    // ── Background ──
     if (backgroundURL) {
         try {
             const bg = await loadImage(backgroundURL);
-            // cover: escalar y centrar
+            // cover: scale and center
             const scale = Math.max(width / bg.width, height / bg.height);
             const sw = bg.width * scale;
             const sh = bg.height * scale;
             ctx.drawImage(bg, (width - sw) / 2, (height - sh) / 2, sw, sh);
         } catch {
-            // si falla la imagen, fondo gradiente
+            // fallback gradient if image fails
             drawDefaultBg(ctx, width, height);
         }
     } else {
         drawDefaultBg(ctx, width, height);
     }
 
-    // ── Overlay oscuro para legibilidad ──
+    // ── Dark overlay for readability ──
     ctx.fillStyle = 'rgba(10, 20, 34, 0.45)';
     ctx.fillRect(0, 0, width, height);
 
-    // ── Avatar circular ──
+    // ── Circular avatar ──
     const avatarSize = 110;
     const avatarX = width / 2;
     const avatarY = 105;
 
-    // borde cyan
+    // cyan border
     ctx.beginPath();
     ctx.arc(avatarX, avatarY, avatarSize / 2 + 5, 0, Math.PI * 2);
     ctx.strokeStyle = '#00E5FF';
@@ -62,7 +62,7 @@ async function generateWelcomeCard({ username, avatarURL, memberCount, backgroun
     ctx.closePath();
     ctx.shadowBlur = 0;
 
-    // clip circular y dibujar avatar
+    // circular clip and draw avatar
     ctx.save();
     ctx.beginPath();
     ctx.arc(avatarX, avatarY, avatarSize / 2, 0, Math.PI * 2);
@@ -78,11 +78,11 @@ async function generateWelcomeCard({ username, avatarURL, memberCount, backgroun
     }
     ctx.restore();
 
-    // ── Texto principal ──
-    const mainText = text || 'BIENVENID@';
+    // ── Main text ──
+    const mainText = text || 'WELCOME';
     ctx.textAlign = 'center';
 
-    // sombra del texto
+    // text shadow
     ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
     ctx.shadowBlur = 8;
     ctx.shadowOffsetY = 2;
@@ -91,20 +91,20 @@ async function generateWelcomeCard({ username, avatarURL, memberCount, backgroun
     ctx.fillStyle = '#00E5FF';
     ctx.fillText(mainText.toUpperCase(), width / 2, 195);
 
-    // ── Nombre del usuario ──
+    // ── Username ──
     ctx.font = 'bold 22px "Arial", "Segoe UI", sans-serif';
     ctx.fillStyle = '#FFFFFF';
     ctx.fillText(username.toUpperCase(), width / 2, 228);
 
-    // ── Miembro # ──
+    // ── Member # ──
     ctx.font = '16px "Arial", "Segoe UI", sans-serif';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.fillText(`Miembro #${memberCount}`, width / 2, 260);
+    ctx.fillText(`Member #${memberCount}`, width / 2, 260);
 
     ctx.shadowBlur = 0;
     ctx.shadowOffsetY = 0;
 
-    // ── Línea decorativa inferior ──
+    // ── Decorative bottom line ──
     const gradient = ctx.createLinearGradient(0, height - 4, width, height - 4);
     gradient.addColorStop(0, 'transparent');
     gradient.addColorStop(0.3, '#00E5FF');
@@ -113,7 +113,7 @@ async function generateWelcomeCard({ username, avatarURL, memberCount, backgroun
     ctx.fillStyle = gradient;
     ctx.fillRect(0, height - 4, width, 4);
 
-    // ── Generar attachment ──
+    // ── Generate attachment ──
     const buffer = canvas.toBuffer('image/png');
     return new AttachmentBuilder(buffer, { name: 'welcome-card.png' });
 }

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t("logs.title") %> — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'logs' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="scroll-text"></i> <%= t("logs.title") %></h1>
+            <p class="page-desc"><%= t("logs.desc") %></p>
+
+            <form id="logs-form">
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div>
+                            <h3><%= t("logs.system") %></h3>
+                            <p><%= t("logs.systemDesc") %></p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" name="plugins.logs" <%= settings.plugins?.logs ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="hash" class="icon-sm"></i> <%= t("logs.channel") %></label>
+                        <select name="log_channel">
+                            <option value=""><%= t("common.selectChannel") %></option>
+                            <% channels.forEach(ch => { %>
+                                <option value="<%= ch.id %>" <%= settings.log_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                        <small><%= t("logs.channelHint") %></small>
+                    </div>
+                </div>
+
+                <div class="config-section info-section">
+                    <div class="info-box">
+                        <i data-lucide="info" class="icon-sm"></i>
+                        <div>
+                            <strong><%= t("logs.eventsLogged") %></strong>
+                            <p><%= t("logs.eventsDesc") %></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        document.getElementById('logs-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data['plugins.logs'] = e.target.querySelector('[name="plugins.logs"]')?.checked || false;
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('<%= t("common.saved") %>', 'success');
+                } else {
+                    showToast('<%= t("common.errorSave") %>', 'error');
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
+            lucide.createIcons();
+        });
+    </script>
+    <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
+</body>
+</html>

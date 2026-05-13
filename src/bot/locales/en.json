@@ -1,0 +1,212 @@
+{
+  "categories": {
+    "moderation": "moderation",
+    "fun": "fun",
+    "utility": "utility",
+    "config": "configuration",
+    "uncategorized": "uncategorized"
+  },
+
+  "ban": {
+    "desc": "Ban a user from the server",
+    "optUser": "User to ban",
+    "optReason": "Reason for ban",
+    "notFound": "I couldn't find that user.",
+    "cantBan": "I can't ban this user. Check my permissions or the role hierarchy.",
+    "selfBan": "You can't ban yourself.",
+    "success": "**{tag}** has been banned.\n**Reason:** {reason}"
+  },
+
+  "kick": {
+    "desc": "Kick a user from the server",
+    "optUser": "User to kick",
+    "optReason": "Reason for kick",
+    "notFound": "I couldn't find that user.",
+    "cantKick": "I can't kick this user.",
+    "selfKick": "You can't kick yourself.",
+    "success": "**{tag}** has been kicked.\n**Reason:** {reason}"
+  },
+
+  "warn": {
+    "desc": "Manage user warnings",
+    "addDesc": "Add a warning",
+    "listDesc": "List user warnings",
+    "clearDesc": "Clear user warnings",
+    "optUser": "User",
+    "optReason": "Reason",
+    "success": "**{tag}** received a warning.\n**Reason:** {reason}\n**Total:** {count} warning(s)",
+    "noWarns": "**{tag}** has no warnings.",
+    "embedTitle": "Warnings for {tag}",
+    "cleared": "Warnings cleared for **{tag}**."
+  },
+
+  "clear": {
+    "desc": "Delete messages from a channel",
+    "optAmount": "Number of messages to delete (1-100)",
+    "optUser": "Delete only messages from this user",
+    "success": "Deleted **{count}** messages.{userSuffix}"
+  },
+
+  "8ball": {
+    "desc": "Ask the magic 8-ball a question",
+    "optQuestion": "Your question",
+    "title": "🎱 Magic 8-Ball",
+    "question": "Question",
+    "answer": "Answer",
+    "responses": [
+      "Yes, definitely.",
+      "Without a doubt.",
+      "Probably yes.",
+      "Signs point to yes.",
+      "I think so.",
+      "Maybe.",
+      "I'm not sure.",
+      "Better not tell you now.",
+      "Focus and ask again.",
+      "Don't count on it.",
+      "Probably not.",
+      "Definitely not.",
+      "Outlook not good.",
+      "Very doubtful.",
+      "No way."
+    ]
+  },
+
+  "coinflip": {
+    "desc": "Flip a coin",
+    "heads": "Heads 🪙",
+    "tails": "Tails 🪙",
+    "title": "🪙 Coin",
+    "result": "The coin landed on... **{result}**"
+  },
+
+  "dado": {
+    "desc": "Roll a die",
+    "optFaces": "Number of faces on the die (default 6)",
+    "title": "🎲 Die",
+    "result": "You rolled a d{faces} and got **{value}**"
+  },
+
+  "ping": {
+    "desc": "Show bot latency",
+    "calculating": "Calculating...",
+    "title": "🏓 Pong!",
+    "latency": "Latency",
+    "api": "API"
+  },
+
+  "avatar": {
+    "desc": "Show a user's avatar",
+    "optUser": "User",
+    "title": "Avatar of {tag}"
+  },
+
+  "rank": {
+    "desc": "Show your level card or another user's",
+    "optUser": "User to check",
+    "noXp": "{target} doesn't have XP yet.",
+    "noXpSelf": "You don't have XP yet.",
+    "level": "Level {level}",
+    "position": "Position #{rank}"
+  },
+
+  "serverinfo": {
+    "desc": "Show server information",
+    "owner": "Owner",
+    "members": "Members",
+    "roles": "Roles",
+    "channels": "Channels",
+    "boosts": "Boosts",
+    "boostLevel": "Boost level",
+    "created": "Created",
+    "none": "None"
+  },
+
+  "userinfo": {
+    "desc": "Show user information",
+    "optUser": "User to check",
+    "accountCreated": "Account created",
+    "joined": "Joined",
+    "roles": "Roles",
+    "highestRole": "Highest role"
+  },
+
+  "autorole": {
+    "desc": "Manage reaction roles with interactive embeds",
+    "createDesc": "Create a reaction roles embed in this channel",
+    "addDesc": "Add an emoji-role to an autorole message",
+    "removeDesc": "Remove an emoji-role from an autorole message",
+    "listDesc": "Show configured reaction roles",
+    "optTitle": "Embed title",
+    "optDescription": "Embed description",
+    "optMessageId": "Autorole message ID",
+    "optEmoji": "Emoji to react with",
+    "optRole": "Role to assign",
+    "optEmojiRemove": "Emoji to remove",
+    "defaultDesc": "React to get a role.",
+    "created": "Autorole embed created.\nMessage ID: `{id}`\nUse `/autorole add` to add emojis and roles.",
+    "roleTooHigh": "That role is above my highest role. I won't be able to assign it.",
+    "msgNotFound": "I couldn't find that message in this channel.",
+    "emojiError": "I couldn't react with that emoji. Make sure it's valid.",
+    "added": "Added: {emoji} → {role}",
+    "removed": "Removed: {emoji} from message `{id}`",
+    "listTitle": "🎭 Reaction Roles",
+    "noConfig": "No reaction roles configured.\nUse `/autorole create` to get started.",
+    "activeCount": "{count} active configuration(s)",
+    "messageField": "Message: {id}"
+  },
+
+  "logs": {
+    "desc": "Configure the moderation log channel",
+    "setDesc": "Set the log channel",
+    "offDesc": "Disable logs",
+    "optChannel": "Channel for logs",
+    "setSuccess": "Log channel: {channel}",
+    "offSuccess": "Logs disabled."
+  },
+
+  "welcome": {
+    "desc": "Configure the welcome system",
+    "channelDesc": "Set the welcome channel",
+    "messageDesc": "Set the welcome message",
+    "offDesc": "Disable welcomes",
+    "testDesc": "Test the current welcome message",
+    "optChannel": "Channel for welcomes",
+    "optMessage": "Use {user} for mention, {server} for server name, {count} for members",
+    "channelSet": "Welcome channel: {channel}",
+    "messageUpdated": "Welcome message updated.",
+    "disabled": "Welcomes disabled.",
+    "noConfig": "No welcome configured.",
+    "previewTitle": "👋 Welcome Preview"
+  },
+
+  "events": {
+    "welcomeTitle": "👋 Welcome",
+    "welcomeDm": "Welcome to {guild}",
+    "farewellTitle": "👋 Goodbye",
+    "commandError": "There was an error executing this command.",
+    "levelUp": "🎉 {user} has reached level **{level}**!",
+    "defaultLevelMsg": "{user} reached level {level}!",
+    "activity": "{count} servers",
+    "autoroleError": "[AUTOROLE] Couldn't assign role in {guild}:"
+  },
+
+  "logger": {
+    "platform": "Platform",
+    "memory": "Memory",
+    "servers": "Servers",
+    "users": "Users",
+    "channels": "Channels",
+    "commands": "Commands",
+    "botOnline": "Bot Online",
+    "cmdLoaded": "{count} commands in {categories} categories",
+    "currentVersion": "Current version: v{version}",
+    "newVersion": "New version available: v{latest} (current: v{version})",
+    "upToDate": "You're using the latest version (v{version})",
+    "download": "Download:"
+  },
+
+  "handler": {
+    "missingData": "Command {file} is missing data or execute, skipping."
+  }
+}

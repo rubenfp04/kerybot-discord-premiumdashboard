@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<%= lang %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenidas — <%= guild.name %></title>
+    <title><%= t("welcome.title") %> — <%= guild.name %></title>
     <%- include('../partials/head') %>
 </head>
 <body>
@@ -13,164 +13,218 @@
         <%- include('../partials/sidebar', { guild, settings, active: 'welcome' }) %>
 
         <div class="panel-content">
-            <h1 class="page-title"><i data-lucide="hand"></i> Bienvenidas y Despedidas</h1>
-            <p class="page-desc">Configura los mensajes y tarjetas que se envían cuando alguien se une o se va del servidor.</p>
+            <h1 class="page-title"><i data-lucide="hand"></i> <%= t("welcome.title") %></h1>
+            <p class="page-desc"><%= t("welcome.desc") %></p>
+
+            <!-- TABS -->
+            <% const tab = typeof activeTab !== 'undefined' ? activeTab : 'mensaje'; %>
+            <div class="config-tabs">
+                <button class="config-tab <%= tab === 'mensaje' ? 'active' : '' %>" data-tab="mensaje">
+                    <i data-lucide="message-square" class="icon-sm"></i> <%= t("welcome.tabMessage") %>
+                </button>
+                <button class="config-tab <%= tab === 'tipo' ? 'active' : '' %>" data-tab="tipo">
+                    <i data-lucide="layout" class="icon-sm"></i> <%= t("welcome.tabType") %>
+                </button>
+                <button class="config-tab <%= tab === 'roles' ? 'active' : '' %>" data-tab="roles">
+                    <i data-lucide="user-plus" class="icon-sm"></i> <%= t("welcome.tabRoles") %>
+                </button>
+                <button class="config-tab <%= tab === 'despedida' ? 'active' : '' %>" data-tab="despedida">
+                    <i data-lucide="log-out" class="icon-sm"></i> <%= t("welcome.tabFarewell") %>
+                </button>
+            </div>
 
             <form id="welcome-form">
-                <!-- BIENVENIDAS -->
-                <div class="config-section">
-                    <div class="config-section-header">
-                        <div>
-                            <h3>Mensaje de bienvenida</h3>
-                            <p>Se envía cuando un usuario se une al servidor</p>
+
+                <!-- ═══ TAB: MESSAGE ═══ -->
+                <div class="tab-panel <%= tab === 'mensaje' ? 'active' : '' %>" data-panel="mensaje">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("welcome.welcomeMessage") %></h3>
+                                <p><%= t("welcome.welcomeMessageDesc") %></p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="plugins.welcome" <%= settings.plugins?.welcome ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" name="plugins.welcome" <%= settings.plugins?.welcome ? 'checked' : '' %>>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Canal de bienvenida</label>
-                        <select name="welcome_channel">
-                            <option value="">Selecciona un canal</option>
-                            <% channels.forEach(ch => { %>
-                                <option value="<%= ch.id %>" <%= settings.welcome_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                            <% }) %>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Mensaje de bienvenida</label>
-                        <textarea name="welcome_message" rows="3" placeholder="¡Bienvenido/a {user} a {server}! Ya somos {count} 🎉"><%= settings.welcome_message || '' %></textarea>
-                        <small>Variables: <code>{user}</code> mención · <code>{server}</code> nombre del server · <code>{count}</code> total miembros</small>
-                    </div>
-                </div>
-
-                <!-- TARJETA DE BIENVENIDA -->
-                <div class="config-section">
-                    <div class="config-section-header">
-                        <div>
-                            <h3>Tarjeta de bienvenida</h3>
-                            <p>Envía una imagen personalizada junto al mensaje</p>
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("welcome.channel") %></label>
+                            <select name="welcome_channel">
+                                <option value=""><%= t("welcome.selectChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.welcome_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" name="welcome_card" <%= settings.welcome_card ? 'checked' : '' %>>
-                            <span class="toggle-slider"></span>
-                        </label>
+
+                        <div class="form-group">
+                            <label><i data-lucide="text" class="icon-sm"></i> <%= t("welcome.messageLabel") %></label>
+                            <textarea name="welcome_message" rows="3" placeholder="<%= t('welcome.messagePlaceholder') %>"><%= settings.welcome_message || '' %></textarea>
+                            <small><%= t("welcome.variables") %> <code>{user}</code> <%= t("welcome.varUser") %> · <code>{server}</code> <%= t("welcome.varServer") %> · <code>{count}</code> <%= t("welcome.varCount") %></small>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label><i data-lucide="image" class="icon-sm"></i> Imagen de fondo de la tarjeta</label>
-                        <input type="text" name="welcome_card_image" id="card-image-input" placeholder="https://ejemplo.com/mi-imagen.png" value="<%= settings.welcome_card_image || '' %>">
-                        <small>Pega la URL de una imagen (se detectan enlaces de Imgur automáticamente). Recomendado: 800×300 px.</small>
-                    </div>
+                    <!-- DM -->
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><i data-lucide="mail" class="icon-sm"></i> <%= t("welcome.dmTitle") %></h3>
+                                <p><%= t("welcome.dmDesc") %></p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="welcome_dm" <%= settings.welcome_dm ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label><i data-lucide="hash" class="icon-sm"></i> Canal de la tarjeta</label>
-                        <select name="welcome_card_channel" class="custom-select">
-                            <option value="">Mismo canal de bienvenida</option>
-                            <% channels.forEach(ch => { %>
-                                <option value="<%= ch.id %>" <%= settings.welcome_card_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                            <% }) %>
-                        </select>
-                        <small>Si lo dejas vacío, se envía en el canal de bienvenida.</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label><i data-lucide="type" class="icon-sm"></i> Texto de la tarjeta <span class="badge-premium">PRO</span></label>
-                        <input type="text" name="welcome_card_text" id="card-text-input" placeholder="{user} se ha unido al servidor" value="<%= settings.welcome_card_text || '' %>" <%= !settings.premium ? 'disabled' : '' %>>
-                        <small>Variables: <code>{user}</code> nombre · <code>{server}</code> servidor · <code>{count}</code> miembros. <% if (!settings.premium) { %><a href="/dashboard/<%= guild.id %>/premium" style="color:var(--gold)">Hazte Premium</a> para personalizar.<% } %></small>
-                    </div>
-
-                    <div class="welcome-card-preview" id="card-preview">
-                        <% if (settings.welcome_card_image) { %>
-                            <img src="<%= settings.welcome_card_image %>" alt="Card background" class="welcome-card-bg-img" id="card-bg-img">
-                        <% } else { %>
-                            <img src="" alt="" class="welcome-card-bg-img" id="card-bg-img" style="display:none">
-                        <% } %>
-                        <div class="welcome-card-overlay">
-                            <div class="welcome-card-avatar"><i data-lucide="user" class="icon-xl"></i></div>
-                            <p class="welcome-card-text" id="card-text-preview"><%= settings.welcome_card_text || 'usuario#0000 se ha unido al servidor' %></p>
-                            <p class="welcome-card-sub">Miembro #<%= guild.memberCount %></p>
+                        <div class="form-group">
+                            <label><%= t("welcome.dmLabel") %></label>
+                            <textarea name="welcome_dm_message" rows="3" placeholder="<%= t('welcome.dmPlaceholder') %>"><%= settings.welcome_dm_message || '' %></textarea>
+                            <small>Variables: <code>{user}</code> <code>{server}</code> <code>{count}</code></small>
                         </div>
                     </div>
                 </div>
 
-                <!-- DM DE BIENVENIDA -->
-                <div class="config-section">
-                    <div class="config-section-header">
-                        <div>
-                            <h3>Mensaje privado de bienvenida</h3>
-                            <p>Envía un DM al usuario cuando se une</p>
+                <!-- ═══ TAB: SEND TYPE ═══ -->
+                <div class="tab-panel <%= tab === 'tipo' ? 'active' : '' %>" data-panel="tipo">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("welcome.formatTitle") %></h3>
+                                <p><%= t("welcome.formatDesc") %></p>
+                            </div>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" name="welcome_dm" <%= settings.welcome_dm ? 'checked' : '' %>>
-                            <span class="toggle-slider"></span>
-                        </label>
+
+                        <div class="welcome-type-selector">
+                            <label class="welcome-type-option <%= !settings.welcome_card ? 'selected' : '' %>">
+                                <input type="radio" name="welcome_type" value="embed" <%= !settings.welcome_card ? 'checked' : '' %>>
+                                <div class="welcome-type-card">
+                                    <div class="welcome-type-icon"><i data-lucide="message-square"></i></div>
+                                    <h4><%= t("welcome.embedOption") %></h4>
+                                    <p><%= t("welcome.embedDesc") %></p>
+                                </div>
+                            </label>
+                            <label class="welcome-type-option <%= settings.welcome_card ? 'selected' : '' %>">
+                                <input type="radio" name="welcome_type" value="card" <%= settings.welcome_card ? 'checked' : '' %>>
+                                <div class="welcome-type-card">
+                                    <div class="welcome-type-icon"><i data-lucide="image"></i></div>
+                                    <h4><%= t("welcome.cardOption") %></h4>
+                                    <p><%= t("welcome.cardDesc") %></p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Mensaje privado</label>
-                        <textarea name="welcome_dm_message" rows="3" placeholder="¡Hola {user}! Bienvenido/a a {server}. Lee las reglas para empezar."><%= settings.welcome_dm_message || '' %></textarea>
+                    <!-- Card settings (shown when card is selected) -->
+                    <div class="config-section card-settings" style="<%= settings.welcome_card ? '' : 'display:none' %>">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><i data-lucide="image" class="icon-sm"></i> <%= t("welcome.cardSettings") %></h3>
+                                <p><%= t("welcome.cardSettingsDesc") %></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="image" class="icon-sm"></i> <%= t("welcome.bgImage") %></label>
+                            <input type="text" name="welcome_card_image" id="card-image-input" placeholder="<%= t('welcome.bgImagePlaceholder') %>" value="<%= settings.welcome_card_image || '' %>">
+                            <small><%= t("welcome.bgImageHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("welcome.cardChannel") %></label>
+                            <select name="welcome_card_channel" class="custom-select">
+                                <option value=""><%= t("welcome.sameWelcomeChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.welcome_card_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("welcome.cardChannelHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="type" class="icon-sm"></i> <%= t("welcome.cardText") %> <span class="badge-premium">PRO</span></label>
+                            <input type="text" name="welcome_card_text" id="card-text-input" placeholder="<%= t('welcome.messagePlaceholder') %>" value="<%= settings.welcome_card_text || '' %>" <%= !settings.premium ? 'disabled' : '' %>>
+                            <small><%= t("welcome.cardTextHint") %> <% if (!settings.premium) { %><a href="/dashboard/<%= guild.id %>/premium" style="color:var(--gold)"><%= t("welcome.premiumCustomize") %></a><% } %></small>
+                        </div>
+
+                        <div class="welcome-card-preview" id="card-preview">
+                            <% if (settings.welcome_card_image) { %>
+                                <img src="<%= settings.welcome_card_image %>" alt="Card background" class="welcome-card-bg-img" id="card-bg-img">
+                            <% } else { %>
+                                <img src="" alt="" class="welcome-card-bg-img" id="card-bg-img" style="display:none">
+                            <% } %>
+                            <div class="welcome-card-overlay">
+                                <div class="welcome-card-avatar"><i data-lucide="user" class="icon-xl"></i></div>
+                                <p class="welcome-card-text" id="card-text-preview"><%= settings.welcome_card_text || t('welcome.messagePlaceholder') %></p>
+                                <p class="welcome-card-sub"><%= t("welcome.memberNumber") %><%= guild.memberCount %></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- DESPEDIDAS -->
-                <div class="config-section">
-                    <div class="config-section-header">
-                        <div>
-                            <h3>Mensaje de despedida</h3>
-                            <p>Se envía cuando un usuario abandona el servidor</p>
+                <!-- ═══ TAB: WELCOME ROLE ═══ -->
+                <div class="tab-panel <%= tab === 'roles' ? 'active' : '' %>" data-panel="roles">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><i data-lucide="user-plus" class="icon-sm"></i> <%= t("welcome.tabRoles") %></h3>
+                                <p><%= t("welcome.autoroleDesc") %></p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="plugins.autorole" <%= settings.plugins?.autorole ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" name="plugins.leave" <%= settings.plugins?.leave ? 'checked' : '' %>>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Canal de despedida</label>
-                        <select name="leave_channel">
-                            <option value="">Selecciona un canal</option>
-                            <% channels.forEach(ch => { %>
-                                <option value="<%= ch.id %>" <%= settings.leave_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                            <% }) %>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Mensaje de despedida</label>
-                        <textarea name="leave_message" rows="3" placeholder="{user} se ha ido de {server}. Ahora somos {count}."><%= settings.leave_message || '' %></textarea>
+                        <div class="form-group">
+                            <label><i data-lucide="shield" class="icon-sm"></i> <%= t("welcome.roleLabel") %></label>
+                            <select name="autorole">
+                                <option value=""><%= t("welcome.selectRole") %></option>
+                                <% roles.forEach(r => { %>
+                                    <option value="<%= r.id %>" <%= settings.autorole === r.id ? 'selected' : '' %>>@<%= r.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("welcome.autoroleHint") %></small>
+                        </div>
                     </div>
                 </div>
 
-                <!-- AUTOROLE (dentro de welcome) -->
-                <div class="config-section">
-                    <div class="config-section-header">
-                        <div>
-                            <h3>Dar un rol a los nuevos usuarios</h3>
-                            <p>Los roles se otorgan automáticamente al unirse</p>
+                <!-- ═══ TAB: FAREWELL ═══ -->
+                <div class="tab-panel <%= tab === 'despedida' ? 'active' : '' %>" data-panel="despedida">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("welcome.farewellTitle") %></h3>
+                                <p><%= t("welcome.farewellDesc") %></p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="plugins.leave" <%= settings.plugins?.leave ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
-                        <label class="toggle">
-                            <input type="checkbox" name="plugins.autorole" <%= settings.plugins?.autorole ? 'checked' : '' %>>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Rol a asignar</label>
-                        <select name="autorole">
-                            <option value="">Selecciona un rol</option>
-                            <% roles.forEach(r => { %>
-                                <option value="<%= r.id %>" <%= settings.autorole === r.id ? 'selected' : '' %>>@<%= r.name %></option>
-                            <% }) %>
-                        </select>
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("welcome.farewellChannel") %></label>
+                            <select name="leave_channel">
+                                <option value=""><%= t("common.selectChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.leave_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="text" class="icon-sm"></i> <%= t("welcome.farewellLabel") %></label>
+                            <textarea name="leave_message" rows="3" placeholder="<%= t('welcome.farewellPlaceholder') %>"><%= settings.leave_message || '' %></textarea>
+                            <small>Variables: <code>{user}</code> <code>{server}</code> <code>{count}</code></small>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> Guardar cambios</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
                 </div>
             </form>
         </div>
@@ -180,16 +234,36 @@
         lucide.createIcons();
         const guildId = '<%= guild.id %>';
 
+        // ── Tabs ──
+        document.querySelectorAll('.config-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+            });
+        });
+
+        // ── Welcome type selector ──
+        document.querySelectorAll('.welcome-type-option input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.querySelectorAll('.welcome-type-option').forEach(opt => opt.classList.remove('selected'));
+                radio.closest('.welcome-type-option').classList.add('selected');
+                const cardSettings = document.querySelector('.card-settings');
+                if (radio.value === 'card') {
+                    cardSettings.style.display = '';
+                } else {
+                    cardSettings.style.display = 'none';
+                }
+            });
+        });
+
         // ── Normalizar URLs de imagen ──
         function normalizeImageUrl(url) {
-            // imgur: https://imgur.com/xF3uHKV → https://i.imgur.com/xF3uHKV.png
             const imgurMatch = url.match(/^https?:\/\/(?:www\.)?imgur\.com\/(\w+)$/);
             if (imgurMatch) return `https://i.imgur.com/${imgurMatch[1]}.png`;
-
-            // imgur con extensión pero dominio incorrecto
             const imgurMatch2 = url.match(/^https?:\/\/(?:www\.)?imgur\.com\/(\w+\.\w+)$/);
             if (imgurMatch2) return `https://i.imgur.com/${imgurMatch2[1]}`;
-
             return url;
         }
 
@@ -200,6 +274,7 @@
         const cardTextPreview = document.getElementById('card-text-preview');
 
         function updateCardImage() {
+            if (!cardImageInput) return;
             let url = cardImageInput.value.trim();
             if (url) {
                 url = normalizeImageUrl(url);
@@ -211,36 +286,43 @@
             }
         }
 
-        cardImageInput.addEventListener('input', updateCardImage);
-        // cargar preview al abrir la página si ya hay URL guardada
-        updateCardImage();
+        if (cardImageInput) {
+            cardImageInput.addEventListener('input', updateCardImage);
+            updateCardImage();
+        }
 
-        cardTextInput.addEventListener('input', () => {
-            const text = cardTextInput.value.trim();
-            cardTextPreview.textContent = text || 'usuario#0000 se ha unido al servidor';
-        });
+        if (cardTextInput) {
+            cardTextInput.addEventListener('input', () => {
+                const text = cardTextInput.value.trim();
+                cardTextPreview.textContent = text || '<%= t("welcome.messagePlaceholder") %>';
+            });
+        }
 
         // ── Save form ──
         document.getElementById('welcome-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> Guardando...';
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
             lucide.createIcons();
 
             const formData = new FormData(e.target);
             const data = {};
 
             for (const [key, val] of formData.entries()) {
+                if (key === 'welcome_type') continue;
                 data[key] = val;
             }
 
-            // checkboxes (no incluidos si no están checked)
-            ['plugins.welcome', 'plugins.leave', 'plugins.autorole', 'welcome_card', 'welcome_dm'].forEach(k => {
+            // welcome_card based on type selector
+            const typeRadio = e.target.querySelector('input[name="welcome_type"]:checked');
+            data.welcome_card = typeRadio ? typeRadio.value === 'card' : false;
+
+            // checkboxes
+            ['plugins.welcome', 'plugins.leave', 'plugins.autorole', 'welcome_dm'].forEach(k => {
                 data[k] = e.target.querySelector(`[name="${k}"]`)?.checked || false;
             });
 
-            // normalizar URL de imagen antes de guardar
             if (data.welcome_card_image) {
                 data.welcome_card_image = normalizeImageUrl(data.welcome_card_image);
             }
@@ -253,16 +335,16 @@
                 });
 
                 if (res.ok) {
-                    showToast('Configuración guardada correctamente', 'success');
+                    showToast('<%= t("common.saved") %>', 'success');
                 } else {
-                    showToast('Error al guardar la configuración', 'error');
+                    showToast('<%= t("common.errorSave") %>', 'error');
                 }
             } catch {
-                showToast('Error de conexión', 'error');
+                showToast('<%= t("common.errorConnection") %>', 'error');
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> Guardar cambios';
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
             lucide.createIcons();
         });
     </script>

@@ -23,7 +23,7 @@ function hasGuildAccess(req, res, next) {
     next();
 }
 
-// lista de servers del usuario
+// user's server list
 router.get('/', isAuthenticated, (req, res) => {
     const userGuilds = req.user.guilds.filter(g => {
         const perms = BigInt(g.permissions);
@@ -46,12 +46,16 @@ router.get('/', isAuthenticated, (req, res) => {
     res.render('dashboard', { guilds: mutualGuilds });
 });
 
-// helper para datos comunes de guild
+// helper for common guild data
 async function getGuildData(req) {
     const guild = req.guild;
     const settings = await getGuildSettings(guild.id);
     const channels = guild.channels.cache
         .filter(c => c.type === 0)
+        .map(c => ({ id: c.id, name: c.name }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    const categories = guild.channels.cache
+        .filter(c => c.type === 4)
         .map(c => ({ id: c.id, name: c.name }))
         .sort((a, b) => a.name.localeCompare(b.name));
     const roles = guild.roles.cache
@@ -68,11 +72,12 @@ async function getGuildData(req) {
         },
         settings,
         channels,
+        categories,
         roles
     };
 }
 
-// Panel principal (plugins overview)
+// Main panel (plugins overview)
 router.get('/:guildId', isAuthenticated, hasGuildAccess, async (req, res) => {
     const data = await getGuildData(req);
     res.render('guild', data);
@@ -81,12 +86,12 @@ router.get('/:guildId', isAuthenticated, hasGuildAccess, async (req, res) => {
 // Plugin pages
 router.get('/:guildId/welcome', isAuthenticated, hasGuildAccess, async (req, res) => {
     const data = await getGuildData(req);
+    data.activeTab = 'mensaje';
     res.render('plugins/welcome', data);
 });
 
-router.get('/:guildId/autorole', isAuthenticated, hasGuildAccess, async (req, res) => {
-    const data = await getGuildData(req);
-    res.render('plugins/welcome', data); // usa la misma vista, autorole está dentro
+router.get('/:guildId/autorole', isAuthenticated, hasGuildAccess, (req, res) => {
+    res.redirect(`/dashboard/${req.params.guildId}/reaction-roles`);
 });
 
 router.get('/:guildId/moderation', isAuthenticated, hasGuildAccess, async (req, res) => {
@@ -96,22 +101,34 @@ router.get('/:guildId/moderation', isAuthenticated, hasGuildAccess, async (req, 
 
 router.get('/:guildId/levels', isAuthenticated, hasGuildAccess, async (req, res) => {
     const data = await getGuildData(req);
+    if (!data.settings.premium) return res.redirect(`/dashboard/${req.params.guildId}/premium`);
     res.render('plugins/levels', data);
 });
 
 router.get('/:guildId/logs', isAuthenticated, hasGuildAccess, async (req, res) => {
     const data = await getGuildData(req);
-    res.render('plugins/moderation', data); // logs está en moderation
+    res.render('plugins/logs', data);
+});
+
+router.get('/:guildId/tickets', isAuthenticated, hasGuildAccess, async (req, res) => {
+    const data = await getGuildData(req);
+    res.render('plugins/tickets', data);
+});
+
+router.get('/:guildId/suggestions', isAuthenticated, hasGuildAccess, async (req, res) => {
+    const data = await getGuildData(req);
+    res.render('plugins/suggestions', data);
 });
 
 router.get('/:guildId/reaction-roles', isAuthenticated, hasGuildAccess, async (req, res) => {
     const data = await getGuildData(req);
-    res.render('plugins/welcome', data); // placeholder
+    res.render('plugins/reaction-roles', data);
 });
 
 router.get('/:guildId/starboard', isAuthenticated, hasGuildAccess, async (req, res) => {
     const data = await getGuildData(req);
-    res.render('plugins/levels', data); // placeholder
+    if (!data.settings.premium) return res.redirect(`/dashboard/${req.params.guildId}/premium`);
+    res.render('plugins/starboard', data);
 });
 
 router.get('/:guildId/premium', isAuthenticated, hasGuildAccess, async (req, res) => {

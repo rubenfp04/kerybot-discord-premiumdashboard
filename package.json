@@ -1,5 +1,5 @@
 {
-  "name": "rekybot",
+  "name": "kerybot",
   "version": "1.0.0",
   "description": "Bot de Discord multi-propósito con dashboard web configurable",
   "main": "index.js",
@@ -14,11 +14,16 @@
     "dashboard",
     "moderation"
   ],
-  "author": "rekybot",
+  "author": "kerybot",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kerybot/kerybot-discord-dashboard"
+  },
   "dependencies": {
     "canvas": "^3.2.3",
     "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.7",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
@@ -26,7 +31,8 @@
     "express-session": "^1.18.1",
     "mongoose": "^8.8.0",
     "passport": "^0.7.0",
-    "passport-discord": "^0.1.4"
+    "passport-discord": "^0.1.4",
+    "stripe": "^22.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

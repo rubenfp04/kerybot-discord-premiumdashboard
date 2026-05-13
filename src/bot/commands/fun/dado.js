@@ -1,27 +1,23 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { createEmbed } = require('../../utils/embeds');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getGuildTranslator } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'diversión',
+    category: 'fun',
     data: new SlashCommandBuilder()
         .setName('dado')
-        .setDescription('Tira un dado')
-        .addIntegerOption(opt =>
-            opt.setName('caras')
-                .setDescription('Número de caras del dado (por defecto 6)')
-                .setMinValue(2)
-                .setMaxValue(100)
-        ),
+        .setDescription('Roll a die')
+        .addIntegerOption(opt => opt.setName('faces').setDescription('Number of faces (default 6)').setMinValue(2).setMaxValue(100)),
 
     async execute(interaction) {
-        const caras = interaction.options.getInteger('caras') || 6;
-        const resultado = Math.floor(Math.random() * caras) + 1;
+        const t = await getGuildTranslator(interaction.guildId);
+        const faces = interaction.options.getInteger('faces') || 6;
+        const value = Math.floor(Math.random() * faces) + 1;
 
-        return interaction.reply({
-            embeds: [createEmbed({
-                title: '🎲 Dado',
-                description: `Tiraste un d${caras} y salió **${resultado}**`
-            })]
-        });
+        const embed = new EmbedBuilder()
+            .setTitle(t('dado.title'))
+            .setDescription(t('dado.result', { faces, value }))
+            .setColor(0x00e5ff);
+
+        return interaction.reply({ embeds: [embed] });
     }
 };

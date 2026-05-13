@@ -1,3 +1,5 @@
+const { getGuildTranslator } = require('../utils/i18n');
+
 module.exports = {
     name: 'interactionCreate',
     once: false,
@@ -11,9 +13,10 @@ module.exports = {
         try {
             await command.execute(interaction);
         } catch (err) {
-            console.error(`[ERROR] Comando ${interaction.commandName}:`, err);
+            console.error(`[ERROR] Command ${interaction.commandName}:`, err);
 
-            const content = { content: 'Hubo un error al ejecutar este comando.', ephemeral: true };
+            const t = await getGuildTranslator(interaction.guildId);
+            const content = { content: t('events.commandError'), ephemeral: true };
 
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp(content);

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t("reactionRoles.title") %> — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'reaction-roles' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="smile-plus"></i> <%= t("reactionRoles.title") %></h1>
+            <p class="page-desc"><%= t("reactionRoles.desc") %></p>
+
+            <div class="config-section">
+                <div class="config-section-header">
+                    <div>
+                        <h3><%= t("reactionRoles.system") %></h3>
+                        <p><%= t("reactionRoles.systemDesc") %></p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="toggle-rr" data-plugin="reactionRoles" <%= settings.plugins?.reactionRoles ? 'checked' : '' %>>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Existing reaction roles list -->
+                <div id="rr-list">
+                    <% if (settings.reaction_roles && settings.reaction_roles.length > 0) { %>
+                        <% settings.reaction_roles.forEach((rr, index) => { %>
+                            <div class="rr-item" data-index="<%= index %>">
+                                <div class="rr-item-info">
+                                    <span class="rr-emoji"><%= rr.emoji %></span>
+                                    <span class="rr-detail">
+                                        <strong><%= t('reactionRoles.role') %>:</strong> <%= roles.find(r => r.id === rr.roleId)?.name || t('reactionRoles.unknownRole') %>
+                                    </span>
+                                    <span class="rr-detail rr-detail-muted">
+                                        <%= t('reactionRoles.channel') %>: #<%= channels.find(c => c.id === rr.channelId)?.name || t('reactionRoles.unknown') %>
+                                    </span>
+                                </div>
+                                <button type="button" class="btn btn-small btn-danger-outline rr-delete" data-index="<%= index %>">
+                                    <i data-lucide="trash-2" class="icon-sm"></i>
+                                </button>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="empty-state" id="rr-empty">
+                            <i data-lucide="inbox" class="icon-lg"></i>
+                            <p><%= t("reactionRoles.noRoles") %></p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Add new reaction role -->
+            <div class="config-section">
+                <div class="config-section-header">
+                    <div>
+                        <h3><i data-lucide="plus-circle" class="icon-sm"></i> <%= t("reactionRoles.addTitle") %></h3>
+                        <p><%= t("reactionRoles.addDesc") %></p>
+                    </div>
+                </div>
+
+                <form id="rr-add-form">
+                    <div class="form-group">
+                        <label><i data-lucide="hash" class="icon-sm"></i> <%= t("reactionRoles.messageChannel") %></label>
+                        <select name="channelId" required>
+                            <option value=""><%= t("common.selectChannel") %></option>
+                            <% channels.forEach(ch => { %>
+                                <option value="<%= ch.id %>">#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="link" class="icon-sm"></i> <%= t("reactionRoles.messageId") %></label>
+                        <input type="text" name="messageId" placeholder="123456789012345678" required>
+                        <small><%= t("reactionRoles.messageIdHint") %></small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i data-lucide="smile" class="icon-sm"></i> <%= t("reactionRoles.emoji") %></label>
+                            <input type="text" name="emoji" placeholder="🎮" required>
+                            <small><%= t("reactionRoles.emojiHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="shield" class="icon-sm"></i> <%= t("reactionRoles.roleToAssign") %></label>
+                            <select name="roleId" required>
+                                <option value=""><%= t("common.selectRole") %></option>
+                                <% roles.forEach(r => { %>
+                                    <option value="<%= r.id %>">@<%= r.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success"><i data-lucide="plus" class="icon-sm"></i> <%= t("reactionRoles.addButton") %></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        // Toggle plugin
+        document.getElementById('toggle-rr').addEventListener('change', async (e) => {
+            const enabled = e.target.checked;
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/plugins`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plugin: 'reactionRoles', enabled })
+                });
+                if (res.ok) {
+                    showToast(enabled ? '<%= t("reactionRoles.enabled") %>' : '<%= t("reactionRoles.disabled") %>', 'success');
+                } else {
+                    showToast('<%= t("common.errorSave") %>', 'error');
+                    e.target.checked = !enabled;
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+                e.target.checked = !enabled;
+            }
+        });
+
+        // Add reaction role
+        document.getElementById('rr-add-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/reaction-roles`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('<%= t("reactionRoles.added") %>', 'success');
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    showToast(err.error || '<%= t("reactionRoles.errorAdd") %>', 'error');
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+            }
+        });
+
+        // Delete reaction role
+        document.querySelectorAll('.rr-delete').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const index = btn.dataset.index;
+                try {
+                    const res = await fetch(`/api/guilds/${guildId}/reaction-roles/${index}`, {
+                        method: 'DELETE'
+                    });
+                    if (res.ok) {
+                        showToast('<%= t("reactionRoles.deleted") %>', 'success');
+                        btn.closest('.rr-item').remove();
+                        const remaining = document.querySelectorAll('.rr-item');
+                        if (remaining.length === 0) {
+                            document.getElementById('rr-list').innerHTML = `
+                                <div class="empty-state" id="rr-empty">
+                                    <i data-lucide="inbox" class="icon-lg"></i>
+                                    <p><%= t("reactionRoles.noRoles") %></p>
+                                </div>`;
+                            lucide.createIcons();
+                        }
+                    } else {
+                        showToast('<%= t("reactionRoles.errorDelete") %>', 'error');
+                    }
+                } catch {
+                    showToast('<%= t("common.errorConnection") %>', 'error');
+                }
+            });
+        });
+    </script>
+    <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
+</body>
+</html>

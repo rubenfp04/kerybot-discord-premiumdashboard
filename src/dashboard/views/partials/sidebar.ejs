@@ -9,8 +9,13 @@
             <span class="sidebar-guild-status"></span>
         </div>
         <div class="sidebar-guild-info">
-            <span class="sidebar-guild-name"><%= guild.name %></span>
-            <span class="sidebar-guild-meta"><i data-lucide="users" class="icon-sm"></i> <%= guild.memberCount %> miembros</span>
+            <span class="sidebar-guild-name">
+                <%= guild.name %>
+                <% if (settings.premium) { %>
+                    <span class="sidebar-guild-premium">PRO</span>
+                <% } %>
+            </span>
+            <span class="sidebar-guild-meta"><i data-lucide="users" class="icon-sm"></i> <%= guild.memberCount %> <%= t('sidebar.members') %></span>
         </div>
     </div>
 
@@ -18,54 +23,61 @@
         <li class="sidebar-item <%= active === 'home' ? 'active' : '' %>">
             <a href="/dashboard/<%= guild.id %>">
                 <span class="sidebar-icon"><i data-lucide="layout-dashboard"></i></span>
-                Panel de control
+                <%= t('sidebar.controlPanel') %>
             </a>
         </li>
         <li class="sidebar-item <%= active === 'premium' ? 'active' : '' %>">
             <a href="/dashboard/<%= guild.id %>/premium">
                 <span class="sidebar-icon"><i data-lucide="crown"></i></span>
-                Premium
+                <%= t('sidebar.premium') %>
             </a>
         </li>
 
-        <li class="sidebar-section">Esenciales</li>
+        <li class="sidebar-section"><%= t('sidebar.essentials') %></li>
 
         <li class="sidebar-item <%= active === 'welcome' ? 'active' : '' %>">
             <a href="/dashboard/<%= guild.id %>/welcome">
                 <span class="plugin-dot <%= settings.plugins?.welcome ? 'active' : 'inactive' %>"></span>
                 <span class="sidebar-icon"><i data-lucide="hand"></i></span>
-                Bienvenidas
-            </a>
-        </li>
-        <li class="sidebar-item <%= active === 'autorole' ? 'active' : '' %>">
-            <a href="/dashboard/<%= guild.id %>/autorole">
-                <span class="plugin-dot <%= settings.plugins?.autorole ? 'active' : 'inactive' %>"></span>
-                <span class="sidebar-icon"><i data-lucide="user-plus"></i></span>
-                Auto-rol
+                <%= t('sidebar.welcomes') %>
             </a>
         </li>
         <li class="sidebar-item <%= active === 'moderation' ? 'active' : '' %>">
             <a href="/dashboard/<%= guild.id %>/moderation">
                 <span class="plugin-dot <%= settings.plugins?.moderation ? 'active' : 'inactive' %>"></span>
                 <span class="sidebar-icon"><i data-lucide="shield"></i></span>
-                Moderación
+                <%= t('sidebar.moderation') %>
             </a>
         </li>
         <li class="sidebar-item <%= active === 'reaction-roles' ? 'active' : '' %>">
             <a href="/dashboard/<%= guild.id %>/reaction-roles">
                 <span class="plugin-dot <%= settings.plugins?.reactionRoles ? 'active' : 'inactive' %>"></span>
                 <span class="sidebar-icon"><i data-lucide="smile-plus"></i></span>
-                Roles de reacción
+                <%= t('sidebar.reactionRoles') %>
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'tickets' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/tickets">
+                <span class="plugin-dot <%= settings.plugins?.tickets ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="ticket"></i></span>
+                <%= t('sidebar.tickets') %>
+            </a>
+        </li>
+        <li class="sidebar-item <%= active === 'suggestions' ? 'active' : '' %>">
+            <a href="/dashboard/<%= guild.id %>/suggestions">
+                <span class="plugin-dot <%= settings.plugins?.suggestions ? 'active' : 'inactive' %>"></span>
+                <span class="sidebar-icon"><i data-lucide="lightbulb"></i></span>
+                <%= t('sidebar.suggestions') %>
             </a>
         </li>
 
-        <li class="sidebar-section">Premium</li>
+        <li class="sidebar-section"><%= t('sidebar.premium') %></li>
 
         <li class="sidebar-item <%= active === 'levels' ? 'active' : '' %>">
             <a href="/dashboard/<%= guild.id %>/levels">
                 <span class="plugin-dot <%= settings.plugins?.levels ? 'active' : 'inactive' %>"></span>
                 <span class="sidebar-icon"><i data-lucide="bar-chart-3"></i></span>
-                Niveles
+                <%= t('sidebar.levels') %>
                 <span class="badge-premium">PRO</span>
             </a>
         </li>
@@ -73,7 +85,7 @@
             <a href="/dashboard/<%= guild.id %>/starboard">
                 <span class="plugin-dot <%= settings.plugins?.starboard ? 'active' : 'inactive' %>"></span>
                 <span class="sidebar-icon"><i data-lucide="star"></i></span>
-                Starboard
+                <%= t('sidebar.starboard') %>
                 <span class="badge-premium">PRO</span>
             </a>
         </li>
@@ -81,7 +93,7 @@
             <a href="/dashboard/<%= guild.id %>/logs">
                 <span class="plugin-dot <%= settings.plugins?.logs ? 'active' : 'inactive' %>"></span>
                 <span class="sidebar-icon"><i data-lucide="scroll-text"></i></span>
-                Logs
+                <%= t('sidebar.logs') %>
             </a>
         </li>
     </ul>

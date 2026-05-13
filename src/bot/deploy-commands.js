@@ -21,15 +21,15 @@ const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 
 (async () => {
     try {
-        console.log(`Registrando ${commands.length} comandos slash...`);
+        console.log(`Registering ${commands.length} slash commands...`);
 
         await rest.put(
             Routes.applicationCommands(process.env.CLIENT_ID),
             { body: commands }
         );
 
-        console.log('Comandos registrados correctamente.');
+        console.log('Commands registered successfully.');
     } catch (err) {
-        console.error('Error registrando comandos:', err);
+        console.error('Error registering commands:', err);
     }
 })();

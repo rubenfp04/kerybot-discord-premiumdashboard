@@ -11,7 +11,7 @@ function createEmbed({ title, description, color, fields, footer, thumbnail, ima
     if (image) embed.setImage(image);
 
     embed.setFooter({
-        text: footer || `rekybot • ${new Date().getFullYear()}`
+        text: footer || `kerybot • ${new Date().getFullYear()}`
     });
 
     embed.setTimestamp();

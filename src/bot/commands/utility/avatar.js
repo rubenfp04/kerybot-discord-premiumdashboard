@@ -1,22 +1,22 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { createEmbed } = require('../../utils/embeds');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getGuildTranslator } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'utilidad',
+    category: 'utility',
     data: new SlashCommandBuilder()
         .setName('avatar')
-        .setDescription('Muestra el avatar de un usuario')
-        .addUserOption(opt => opt.setName('usuario').setDescription('Usuario')),
+        .setDescription('Show a user\'s avatar')
+        .addUserOption(opt => opt.setName('user').setDescription('User')),
 
     async execute(interaction) {
-        const user = interaction.options.getUser('usuario') || interaction.user;
-        const avatarUrl = user.displayAvatarURL({ dynamic: true, size: 512 });
+        const t = await getGuildTranslator(interaction.guildId);
+        const user = interaction.options.getUser('user') || interaction.user;
 
-        return interaction.reply({
-            embeds: [createEmbed({
-                title: `Avatar de ${user.tag}`,
-                image: avatarUrl
-            })]
-        });
+        const embed = new EmbedBuilder()
+            .setTitle(t('avatar.title', { tag: user.tag }))
+            .setImage(user.displayAvatarURL({ size: 512, dynamic: true }))
+            .setColor(0x00e5ff);
+
+        return interaction.reply({ embeds: [embed] });
     }
 };

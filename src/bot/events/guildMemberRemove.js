@@ -1,5 +1,6 @@
 const { getGuildSettings } = require('../../database/models/guild');
 const { createEmbed } = require('../utils/embeds');
+const { getTranslator } = require('../utils/i18n');
 
 module.exports = {
     name: 'guildMemberRemove',
@@ -7,6 +8,7 @@ module.exports = {
 
     async execute(member, client) {
         const settings = await getGuildSettings(member.guild.id);
+        const t = getTranslator(settings.language);
 
         if (settings.plugins?.leave && settings.leave_channel && settings.leave_message) {
             const channel = member.guild.channels.cache.get(settings.leave_channel);
@@ -19,7 +21,7 @@ module.exports = {
 
             channel.send({
                 embeds: [createEmbed({
-                    title: '👋 Adiós',
+                    title: t('events.farewellTitle'),
                     description: msg,
                     color: '#ED4245'
                 })]

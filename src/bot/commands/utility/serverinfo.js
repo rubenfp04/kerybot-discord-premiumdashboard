@@ -1,29 +1,30 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { createEmbed } = require('../../utils/embeds');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getGuildTranslator } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'utilidad',
+    category: 'utility',
     data: new SlashCommandBuilder()
         .setName('serverinfo')
-        .setDescription('Muestra información del servidor'),
+        .setDescription('Show server information'),
 
     async execute(interaction) {
+        const t = await getGuildTranslator(interaction.guildId);
         const { guild } = interaction;
 
-        const embed = createEmbed({
-            title: guild.name,
-            thumbnail: guild.iconURL({ dynamic: true, size: 256 }),
-            fields: [
-                { name: 'Dueño', value: `<@${guild.ownerId}>`, inline: true },
-                { name: 'Miembros', value: `${guild.memberCount}`, inline: true },
-                { name: 'Roles', value: `${guild.roles.cache.size}`, inline: true },
-                { name: 'Canales', value: `${guild.channels.cache.size}`, inline: true },
-                { name: 'Boosts', value: `${guild.premiumSubscriptionCount || 0}`, inline: true },
-                { name: 'Nivel de boost', value: `${guild.premiumTier || 'Ninguno'}`, inline: true },
-                { name: 'Creado', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
+        const embed = new EmbedBuilder()
+            .setTitle(guild.name)
+            .setThumbnail(guild.iconURL({ dynamic: true, size: 256 }))
+            .setColor(0x00e5ff)
+            .addFields(
+                { name: t('serverinfo.owner'), value: `<@${guild.ownerId}>`, inline: true },
+                { name: t('serverinfo.members'), value: `${guild.memberCount}`, inline: true },
+                { name: t('serverinfo.roles'), value: `${guild.roles.cache.size}`, inline: true },
+                { name: t('serverinfo.channels'), value: `${guild.channels.cache.size}`, inline: true },
+                { name: t('serverinfo.boosts'), value: `${guild.premiumSubscriptionCount || 0}`, inline: true },
+                { name: t('serverinfo.boostLevel'), value: `${guild.premiumTier || t('serverinfo.none')}`, inline: true },
+                { name: t('serverinfo.created'), value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
                 { name: 'ID', value: guild.id, inline: true }
-            ]
-        });
+            );
 
         return interaction.reply({ embeds: [embed] });
     }

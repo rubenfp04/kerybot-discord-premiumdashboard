@@ -1,0 +1,212 @@
+{
+  "categories": {
+    "moderation": "moderación",
+    "fun": "diversión",
+    "utility": "utilidad",
+    "config": "configuración",
+    "uncategorized": "sin categoría"
+  },
+
+  "ban": {
+    "desc": "Banea a un usuario del servidor",
+    "optUser": "Usuario a banear",
+    "optReason": "Razón del ban",
+    "notFound": "No encontré a ese usuario.",
+    "cantBan": "No puedo banear a este usuario. Revisa mis permisos o la jerarquía de roles.",
+    "selfBan": "No te puedes banear a ti mismo.",
+    "success": "**{tag}** ha sido baneado.\n**Razón:** {reason}"
+  },
+
+  "kick": {
+    "desc": "Expulsa a un usuario del servidor",
+    "optUser": "Usuario a expulsar",
+    "optReason": "Razón de la expulsión",
+    "notFound": "No encontré a ese usuario.",
+    "cantKick": "No puedo expulsar a este usuario.",
+    "selfKick": "No te puedes expulsar a ti mismo.",
+    "success": "**{tag}** ha sido expulsado.\n**Razón:** {reason}"
+  },
+
+  "warn": {
+    "desc": "Gestiona las advertencias de un usuario",
+    "addDesc": "Añade una advertencia",
+    "listDesc": "Lista las advertencias de un usuario",
+    "clearDesc": "Limpia las advertencias de un usuario",
+    "optUser": "Usuario",
+    "optReason": "Razón",
+    "success": "**{tag}** ha recibido una advertencia.\n**Razón:** {reason}\n**Total:** {count} advertencia(s)",
+    "noWarns": "**{tag}** no tiene advertencias.",
+    "embedTitle": "Advertencias de {tag}",
+    "cleared": "Se limpiaron las advertencias de **{tag}**."
+  },
+
+  "clear": {
+    "desc": "Borra mensajes de un canal",
+    "optAmount": "Número de mensajes a borrar (1-100)",
+    "optUser": "Borrar solo mensajes de este usuario",
+    "success": "Se borraron **{count}** mensajes.{userSuffix}"
+  },
+
+  "8ball": {
+    "desc": "Hazle una pregunta a la bola mágica",
+    "optQuestion": "Tu pregunta",
+    "title": "🎱 Bola Mágica",
+    "question": "Pregunta",
+    "answer": "Respuesta",
+    "responses": [
+      "Sí, definitivamente.",
+      "Sin duda.",
+      "Probablemente sí.",
+      "Las señales apuntan a que sí.",
+      "Yo creo que sí.",
+      "Puede ser.",
+      "No estoy seguro.",
+      "Mejor no te lo digo ahora.",
+      "Concéntrate y vuelve a preguntar.",
+      "No cuentes con ello.",
+      "Probablemente no.",
+      "Definitivamente no.",
+      "Las perspectivas no son buenas.",
+      "Muy dudoso.",
+      "Ni de broma."
+    ]
+  },
+
+  "coinflip": {
+    "desc": "Lanza una moneda al aire",
+    "heads": "Cara 🪙",
+    "tails": "Cruz 🪙",
+    "title": "🪙 Moneda",
+    "result": "La moneda cayó en... **{result}**"
+  },
+
+  "dado": {
+    "desc": "Tira un dado",
+    "optFaces": "Número de caras del dado (por defecto 6)",
+    "title": "🎲 Dado",
+    "result": "Tiraste un d{faces} y salió **{value}**"
+  },
+
+  "ping": {
+    "desc": "Muestra la latencia del bot",
+    "calculating": "Calculando...",
+    "title": "🏓 Pong!",
+    "latency": "Latencia",
+    "api": "API"
+  },
+
+  "avatar": {
+    "desc": "Muestra el avatar de un usuario",
+    "optUser": "Usuario",
+    "title": "Avatar de {tag}"
+  },
+
+  "rank": {
+    "desc": "Muestra tu tarjeta de nivel o la de otro usuario",
+    "optUser": "Usuario a consultar",
+    "noXp": "{target} no tiene XP todavía.",
+    "noXpSelf": "No tienes XP todavía.",
+    "level": "Nivel {level}",
+    "position": "Posición #{rank}"
+  },
+
+  "serverinfo": {
+    "desc": "Muestra información del servidor",
+    "owner": "Dueño",
+    "members": "Miembros",
+    "roles": "Roles",
+    "channels": "Canales",
+    "boosts": "Boosts",
+    "boostLevel": "Nivel de boost",
+    "created": "Creado",
+    "none": "Ninguno"
+  },
+
+  "userinfo": {
+    "desc": "Muestra información de un usuario",
+    "optUser": "Usuario a consultar",
+    "accountCreated": "Cuenta creada",
+    "joined": "Se unió",
+    "roles": "Roles",
+    "highestRole": "Rol más alto"
+  },
+
+  "autorole": {
+    "desc": "Gestiona roles de reacción con embeds interactivos",
+    "createDesc": "Crea un embed de roles de reacción en este canal",
+    "addDesc": "Añade un emoji-rol a un mensaje de autorole",
+    "removeDesc": "Quita un emoji-rol de un mensaje de autorole",
+    "listDesc": "Muestra los roles de reacción configurados",
+    "optTitle": "Título del embed",
+    "optDescription": "Descripción del embed",
+    "optMessageId": "ID del mensaje de autorole",
+    "optEmoji": "Emoji a reaccionar",
+    "optRole": "Rol a asignar",
+    "optEmojiRemove": "Emoji a quitar",
+    "defaultDesc": "Reacciona para obtener un rol.",
+    "created": "Embed de autorole creado.\nID del mensaje: `{id}`\nUsa `/autorole add` para añadir emojis y roles.",
+    "roleTooHigh": "Ese rol está por encima de mi rol más alto. No podré asignarlo.",
+    "msgNotFound": "No encontré ese mensaje en este canal.",
+    "emojiError": "No pude reaccionar con ese emoji. Asegúrate de que sea válido.",
+    "added": "Añadido: {emoji} → {role}",
+    "removed": "Eliminado: {emoji} del mensaje `{id}`",
+    "listTitle": "🎭 Roles de reacción",
+    "noConfig": "No hay roles de reacción configurados.\nUsa `/autorole create` para empezar.",
+    "activeCount": "{count} configuración(es) activa(s)",
+    "messageField": "Mensaje: {id}"
+  },
+
+  "logs": {
+    "desc": "Configura el canal de logs de moderación",
+    "setDesc": "Establece el canal de logs",
+    "offDesc": "Desactiva los logs",
+    "optChannel": "Canal para logs",
+    "setSuccess": "Canal de logs: {channel}",
+    "offSuccess": "Logs desactivados."
+  },
+
+  "welcome": {
+    "desc": "Configura el sistema de bienvenida",
+    "channelDesc": "Establece el canal de bienvenida",
+    "messageDesc": "Establece el mensaje de bienvenida",
+    "offDesc": "Desactiva las bienvenidas",
+    "testDesc": "Prueba el mensaje de bienvenida actual",
+    "optChannel": "Canal para bienvenidas",
+    "optMessage": "Usa {user} para mención, {server} para nombre del server, {count} para miembros",
+    "channelSet": "Canal de bienvenida: {channel}",
+    "messageUpdated": "Mensaje de bienvenida actualizado.",
+    "disabled": "Bienvenidas desactivadas.",
+    "noConfig": "No hay bienvenida configurada.",
+    "previewTitle": "👋 Vista previa de bienvenida"
+  },
+
+  "events": {
+    "welcomeTitle": "👋 Bienvenido/a",
+    "welcomeDm": "Bienvenido/a a {guild}",
+    "farewellTitle": "👋 Adiós",
+    "commandError": "Hubo un error al ejecutar este comando.",
+    "levelUp": "🎉 {user} ha alcanzado el nivel **{level}**!",
+    "defaultLevelMsg": "¡{user} subió al nivel {level}!",
+    "activity": "{count} servidores",
+    "autoroleError": "[AUTOROLE] No pude asignar rol en {guild}:"
+  },
+
+  "logger": {
+    "platform": "Plataforma",
+    "memory": "Memoria",
+    "servers": "Servidores",
+    "users": "Usuarios",
+    "channels": "Canales",
+    "commands": "Comandos",
+    "botOnline": "Bot Online",
+    "cmdLoaded": "{count} comandos en {categories} categorías",
+    "currentVersion": "Versión actual: v{version}",
+    "newVersion": "Nueva versión disponible: v{latest} (actual: v{version})",
+    "upToDate": "Estás usando la última versión (v{version})",
+    "download": "Descarga:"
+  },
+
+  "handler": {
+    "missingData": "Comando {file} le falta data o execute, saltando."
+  }
+}

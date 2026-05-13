@@ -1,35 +1,37 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { successEmbed, errorEmbed } = require('../../utils/embeds');
+const { getGuildTranslator } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'moderación',
+    category: 'moderation',
     data: new SlashCommandBuilder()
         .setName('kick')
-        .setDescription('Expulsa a un usuario del servidor')
-        .addUserOption(opt => opt.setName('usuario').setDescription('Usuario a expulsar').setRequired(true))
-        .addStringOption(opt => opt.setName('razón').setDescription('Razón de la expulsión'))
+        .setDescription('Kick a user from the server')
+        .addUserOption(opt => opt.setName('user').setDescription('User to kick').setRequired(true))
+        .addStringOption(opt => opt.setName('reason').setDescription('Reason for kick'))
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 
     async execute(interaction) {
-        const target = interaction.options.getMember('usuario');
-        const reason = interaction.options.getString('razón') || 'Sin razón especificada';
+        const t = await getGuildTranslator(interaction.guildId);
+        const target = interaction.options.getMember('user');
+        const reason = interaction.options.getString('reason') || 'No reason specified';
 
         if (!target) {
-            return interaction.reply({ embeds: [errorEmbed('No encontré a ese usuario.')], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed(t('kick.notFound'))], ephemeral: true });
         }
 
         if (!target.kickable) {
-            return interaction.reply({ embeds: [errorEmbed('No puedo expulsar a este usuario.')], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed(t('kick.cantKick'))], ephemeral: true });
         }
 
         if (target.id === interaction.user.id) {
-            return interaction.reply({ embeds: [errorEmbed('No te puedes expulsar a ti mismo.')], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed(t('kick.selfKick'))], ephemeral: true });
         }
 
-        await target.kick(`${reason} | Por: ${interaction.user.tag}`);
+        await target.kick(`${reason} | By: ${interaction.user.tag}`);
 
         return interaction.reply({
-            embeds: [successEmbed(`**${target.user.tag}** ha sido expulsado.\n**Razón:** ${reason}`)]
+            embeds: [successEmbed(t('kick.success', { tag: target.user.tag, reason }))]
         });
     }
 };

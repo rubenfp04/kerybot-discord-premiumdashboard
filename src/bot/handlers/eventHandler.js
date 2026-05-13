@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { logger } = require('../utils/logger');
 
 async function loadEvents(client) {
     const eventsPath = path.join(__dirname, '..', 'events');
@@ -19,7 +20,7 @@ async function loadEvents(client) {
         loaded++;
     }
 
-    console.log(`[EVENTS] ${loaded} eventos cargados.`);
+    logger.success('EVT', `${loaded} events loaded`);
 }
 
 module.exports = { loadEvents };

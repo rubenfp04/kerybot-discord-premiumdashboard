@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<%= lang %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — rekybot</title>
+    <title><%= t('nav.dashboard') %> — kerybot</title>
     <%- include('partials/head') %>
 </head>
 <body>
@@ -11,8 +11,8 @@
 
     <main class="dashboard-main">
         <div class="dashboard-header">
-            <h1>Selecciona un servidor</h1>
-            <p>Elige el servidor que quieres configurar</p>
+            <h1><%= t('dashboard.selectServer') %></h1>
+            <p><%= t('dashboard.selectDesc') %></p>
         </div>
 
         <div class="guild-grid">
@@ -29,15 +29,15 @@
                         <div class="guild-card-info">
                             <h3><%= guild.name %></h3>
                             <% if (guild.botIn) { %>
-                                <span class="guild-members"><%= guild.memberCount %> miembros</span>
+                                <span class="guild-members"><%= guild.memberCount %> <%= t('dashboard.members') %></span>
                             <% } else { %>
-                                <span class="badge badge-gray">Bot no añadido</span>
+                                <span class="badge badge-gray"><%= t('dashboard.botNotAdded') %></span>
                             <% } %>
                         </div>
                         <% if (guild.botIn) { %>
-                            <a href="/dashboard/<%= guild.id %>" class="btn btn-primary btn-small">Configurar</a>
+                            <a href="/dashboard/<%= guild.id %>" class="btn btn-primary btn-small"><%= t('dashboard.configure') %></a>
                         <% } else { %>
-                            <a href="https://discord.com/oauth2/authorize?client_id=<%= process.env.CLIENT_ID %>&scope=bot+applications.commands&permissions=8&guild_id=<%= guild.id %>" class="btn btn-outline btn-small" target="_blank">Invitar</a>
+                            <a href="https://discord.com/oauth2/authorize?client_id=<%= process.env.CLIENT_ID %>&scope=bot+applications.commands&permissions=8&guild_id=<%= guild.id %>" class="btn btn-outline btn-small" target="_blank"><%= t('dashboard.invite') %></a>
                         <% } %>
                     </div>
                 </div>

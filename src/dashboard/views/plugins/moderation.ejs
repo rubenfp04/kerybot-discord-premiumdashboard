@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<%= lang %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderación — <%= guild.name %></title>
+    <title><%= t("moderation.title") %> — <%= guild.name %></title>
     <%- include('../partials/head') %>
 </head>
 <body>
@@ -13,55 +13,145 @@
         <%- include('../partials/sidebar', { guild, settings, active: 'moderation' }) %>
 
         <div class="panel-content">
-            <h1 class="page-title"><i data-lucide="shield"></i> Moderación</h1>
-            <p class="page-desc">Configura las herramientas de moderación del servidor.</p>
+            <h1 class="page-title"><i data-lucide="shield"></i> <%= t("moderation.title") %></h1>
+            <p class="page-desc"><%= t("moderation.desc") %></p>
 
             <form id="mod-form">
+                <!-- ROL + LOGS -->
                 <div class="config-section">
                     <div class="config-section-header">
                         <div>
-                            <h3>Canal de logs</h3>
-                            <p>Las acciones de moderación se registrarán aquí</p>
+                            <h3><%= t("moderation.generalConfig") %></h3>
+                            <p><%= t("moderation.generalConfigDesc") %></p>
                         </div>
                         <label class="toggle">
-                            <input type="checkbox" name="plugins.logs" <%= settings.plugins?.logs ? 'checked' : '' %>>
+                            <input type="checkbox" name="plugins.moderation" <%= settings.plugins?.moderation ? 'checked' : '' %>>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
 
-                    <div class="form-group">
-                        <label>Canal de logs</label>
-                        <select name="log_channel">
-                            <option value="">Selecciona un canal</option>
-                            <% channels.forEach(ch => { %>
-                                <option value="<%= ch.id %>" <%= settings.log_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
-                            <% }) %>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i data-lucide="shield" class="icon-sm"></i> <%= t("moderation.modRole") %></label>
+                            <select name="mod_role">
+                                <option value=""><%= t("moderation.noRole") %></option>
+                                <% roles.forEach(r => { %>
+                                    <option value="<%= r.id %>" <%= settings.mod_role === r.id ? 'selected' : '' %>>@<%= r.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("moderation.modRoleHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="scroll-text" class="icon-sm"></i> <%= t("moderation.logChannel") %></label>
+                            <select name="log_channel">
+                                <option value=""><%= t("common.selectChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.log_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="config-section">
-                    <div class="config-section-header">
+                <!-- AUTOMOD -->
+                <div class="collapsible-section">
+                    <button type="button" class="collapsible-header" data-collapse="automod">
                         <div>
-                            <h3>Rol de moderador</h3>
-                            <p>Los usuarios con este rol podrán usar comandos de moderación</p>
+                            <h3><%= t("moderation.automodTitle") %></h3>
+                            <p><%= t("moderation.automodDesc") %></p>
+                        </div>
+                        <i data-lucide="chevron-down" class="collapsible-icon"></i>
+                    </button>
+
+                    <div class="collapsible-body open" id="automod">
+                        <%
+                        const automodRules = [
+                            { key: 'badwords', label: t('moderation.badwords'), icon: 'settings-2' },
+                            { key: 'repeated', label: t('moderation.repeated'), icon: 'settings-2' },
+                            { key: 'invites', label: t('moderation.invites'), icon: 'crown', premium: true },
+                            { key: 'links', label: t('moderation.links'), icon: 'crown', premium: true },
+                            { key: 'caps', label: t('moderation.caps'), icon: 'settings-2' },
+                            { key: 'emojis', label: t('moderation.emojis'), icon: 'settings-2' },
+                            { key: 'spoilers', label: t('moderation.spoilers'), icon: 'settings-2' },
+                            { key: 'mentions', label: t('moderation.mentions'), icon: 'settings-2' },
+                            { key: 'zalgo', label: t('moderation.zalgo'), icon: 'settings-2' },
+                            { key: 'antispam', label: t('moderation.antispam'), icon: 'settings-2' }
+                        ];
+                        %>
+
+                        <div class="automod-grid">
+                            <% automodRules.forEach(rule => { %>
+                                <div class="automod-item">
+                                    <label class="automod-label">
+                                        <%= rule.label %>
+                                        <% if (rule.premium) { %>
+                                            <span class="badge-premium-sm">PRO</span>
+                                        <% } else { %>
+                                            <i data-lucide="<%= rule.icon %>" class="icon-sm automod-icon"></i>
+                                        <% } %>
+                                    </label>
+                                    <select name="automod.<%= rule.key %>"<%= (rule.premium && !settings.premium) ? ' disabled' : '' %>>
+                                        <option value="disabled" <%= settings.automod?.[rule.key] === 'disabled' || !settings.automod?.[rule.key] ? 'selected' : '' %>><%= t('moderation.disabled') %></option>
+                                        <option value="warn" <%= settings.automod?.[rule.key] === 'warn' ? 'selected' : '' %>><%= t('moderation.warn') %></option>
+                                        <option value="delete" <%= settings.automod?.[rule.key] === 'delete' ? 'selected' : '' %>><%= t('moderation.deleteMsg') %></option>
+                                        <option value="mute" <%= settings.automod?.[rule.key] === 'mute' ? 'selected' : '' %>><%= t('moderation.mute') %></option>
+                                        <option value="kick" <%= settings.automod?.[rule.key] === 'kick' ? 'selected' : '' %>><%= t('moderation.kick') %></option>
+                                        <option value="ban" <%= settings.automod?.[rule.key] === 'ban' ? 'selected' : '' %>><%= t('moderation.ban') %></option>
+                                    </select>
+                                </div>
+                            <% }) %>
+                        </div>
+
+                        <div class="automod-toggle-row">
+                            <label class="toggle">
+                                <input type="checkbox" name="automod.ignoreBots" <%= settings.automod?.ignoreBots !== false ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span><%= t("moderation.ignoreBots") %></span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label>Rol de moderador</label>
-                        <select name="mod_role">
-                            <option value="">Ninguno (solo permisos de Discord)</option>
-                            <% roles.forEach(r => { %>
-                                <option value="<%= r.id %>" <%= settings.mod_role === r.id ? 'selected' : '' %>>@<%= r.name %></option>
-                            <% }) %>
-                        </select>
-                        <small>Los usuarios con permisos de Discord siempre pueden moderar, esto es un rol adicional.</small>
+                <!-- AUTOMATIC ACTIONS -->
+                <div class="collapsible-section">
+                    <button type="button" class="collapsible-header" data-collapse="actions">
+                        <div>
+                            <h3><%= t("moderation.autoActions") %></h3>
+                            <p><%= t("moderation.autoActionsDesc") %></p>
+                        </div>
+                        <i data-lucide="chevron-down" class="collapsible-icon"></i>
+                    </button>
+
+                    <div class="collapsible-body" id="actions">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i data-lucide="alert-triangle" class="icon-sm"></i> <%= t("moderation.warnThreshold") %></label>
+                                <input type="number" name="automod_actions.warn_threshold" value="<%= settings.automod_actions?.warn_threshold || 3 %>" min="1" max="20" placeholder="3">
+                                <small><%= t("moderation.warnThresholdHint") %></small>
+                            </div>
+
+                            <div class="form-group">
+                                <label><i data-lucide="zap" class="icon-sm"></i> <%= t("moderation.limitAction") %></label>
+                                <select name="automod_actions.warn_action">
+                                    <option value="disabled" <%= settings.automod_actions?.warn_action === 'disabled' || !settings.automod_actions?.warn_action ? 'selected' : '' %>><%= t('moderation.disabled') %></option>
+                                    <option value="mute" <%= settings.automod_actions?.warn_action === 'mute' ? 'selected' : '' %>><%= t('moderation.mute') %></option>
+                                    <option value="kick" <%= settings.automod_actions?.warn_action === 'kick' ? 'selected' : '' %>><%= t('moderation.kick') %></option>
+                                    <option value="ban" <%= settings.automod_actions?.warn_action === 'ban' ? 'selected' : '' %>><%= t('moderation.ban') %></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="clock" class="icon-sm"></i> <%= t("moderation.duration") %> <span class="form-hint">(<%= t("moderation.durationHint") %>)</span></label>
+                            <input type="number" name="automod_actions.warn_duration" value="<%= settings.automod_actions?.warn_duration || 0 %>" min="0" max="43200" placeholder="0">
+                            <small><%= t("moderation.durationDesc") %></small>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> Guardar cambios</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
                 </div>
             </form>
         </div>
@@ -71,16 +161,35 @@
         lucide.createIcons();
         const guildId = '<%= guild.id %>';
 
+        // ── Collapsible sections ──
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const target = document.getElementById(header.dataset.collapse);
+                const icon = header.querySelector('.collapsible-icon');
+                target.classList.toggle('open');
+                icon.style.transform = target.classList.contains('open') ? 'rotate(180deg)' : '';
+            });
+        });
+
+        // ── Save form ──
         document.getElementById('mod-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> Guardando...';
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
             lucide.createIcons();
 
             const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
+            const data = {};
+
+            for (const [key, val] of formData.entries()) {
+                data[key] = val;
+            }
+
+            // checkboxes
+            data['plugins.moderation'] = e.target.querySelector('[name="plugins.moderation"]')?.checked || false;
             data['plugins.logs'] = e.target.querySelector('[name="plugins.logs"]')?.checked || false;
+            data['automod.ignoreBots'] = e.target.querySelector('[name="automod.ignoreBots"]')?.checked || false;
 
             try {
                 const res = await fetch(`/api/guilds/${guildId}/settings`, {
@@ -89,16 +198,16 @@
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
-                    showToast('Configuración guardada correctamente', 'success');
+                    showToast('<%= t("common.saved") %>', 'success');
                 } else {
-                    showToast('Error al guardar', 'error');
+                    showToast('<%= t("common.errorSave") %>', 'error');
                 }
             } catch {
-                showToast('Error de conexión', 'error');
+                showToast('<%= t("common.errorConnection") %>', 'error');
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> Guardar cambios';
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
             lucide.createIcons();
         });
     </script>

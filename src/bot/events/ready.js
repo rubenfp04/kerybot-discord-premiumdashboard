@@ -1,16 +1,17 @@
 const { ActivityType } = require('discord.js');
+const { logger } = require('../utils/logger');
+const { t } = require('../utils/i18n');
 
 module.exports = {
     name: 'ready',
     once: true,
 
     async execute(client) {
-        console.log(`[BOT] Conectado como ${client.user.tag}`);
-        console.log(`[BOT] En ${client.guilds.cache.size} servidores`);
+        logger.botStats(client);
 
         client.user.setPresence({
             activities: [{
-                name: `${client.guilds.cache.size} servidores`,
+                name: t('en', 'events.activity', { count: client.guilds.cache.size }),
                 type: ActivityType.Watching
             }],
             status: 'online'

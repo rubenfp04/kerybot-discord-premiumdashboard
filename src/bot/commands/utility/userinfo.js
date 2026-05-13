@@ -1,37 +1,35 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { createEmbed } = require('../../utils/embeds');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getGuildTranslator } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'utilidad',
+    category: 'utility',
     data: new SlashCommandBuilder()
         .setName('userinfo')
-        .setDescription('Muestra información de un usuario')
-        .addUserOption(opt => opt.setName('usuario').setDescription('Usuario a consultar')),
+        .setDescription('Show user information')
+        .addUserOption(opt => opt.setName('user').setDescription('User to check')),
 
     async execute(interaction) {
-        const user = interaction.options.getUser('usuario') || interaction.user;
-        const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+        const t = await getGuildTranslator(interaction.guildId);
+        const user = interaction.options.getUser('user') || interaction.user;
+        const member = interaction.guild.members.cache.get(user.id);
 
-        const fields = [
-            { name: 'Tag', value: user.tag, inline: true },
-            { name: 'ID', value: user.id, inline: true },
-            { name: 'Cuenta creada', value: `<t:${Math.floor(user.createdTimestamp / 1000)}:R>`, inline: true }
-        ];
+        const embed = new EmbedBuilder()
+            .setTitle(user.tag)
+            .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+            .setColor(0x00e5ff)
+            .addFields(
+                { name: 'ID', value: user.id, inline: true },
+                { name: t('userinfo.accountCreated'), value: `<t:${Math.floor(user.createdTimestamp / 1000)}:R>`, inline: true }
+            );
 
         if (member) {
-            fields.push(
-                { name: 'Se unió', value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:R>`, inline: true },
-                { name: 'Roles', value: `${member.roles.cache.size - 1}`, inline: true },
-                { name: 'Rol más alto', value: `${member.roles.highest}`, inline: true }
+            embed.addFields(
+                { name: t('userinfo.joined'), value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:R>`, inline: true },
+                { name: t('userinfo.roles'), value: `${member.roles.cache.size - 1}`, inline: true },
+                { name: t('userinfo.highestRole'), value: `${member.roles.highest}`, inline: true }
             );
         }
 
-        return interaction.reply({
-            embeds: [createEmbed({
-                title: user.tag,
-                thumbnail: user.displayAvatarURL({ dynamic: true, size: 256 }),
-                fields
-            })]
-        });
+        return interaction.reply({ embeds: [embed] });
     }
 };

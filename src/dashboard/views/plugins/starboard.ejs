@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t("starboard.title") %> — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'starboard' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="star"></i> <%= t("starboard.title") %></h1>
+            <p class="page-desc"><%= t("starboard.desc") %></p>
+
+            <form id="starboard-form">
+                <div class="config-section">
+                    <div class="config-section-header">
+                        <div>
+                            <h3><%= t("starboard.system") %> <span class="badge-premium">PRO</span></h3>
+                            <p><%= t("starboard.systemDesc") %></p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" name="plugins.starboard" <%= settings.plugins?.starboard ? 'checked' : '' %>>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="hash" class="icon-sm"></i> <%= t("starboard.channel") %></label>
+                        <select name="starboard_channel">
+                            <option value=""><%= t("common.selectChannel") %></option>
+                            <% channels.forEach(ch => { %>
+                                <option value="<%= ch.id %>" <%= settings.starboard_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                            <% }) %>
+                        </select>
+                        <small><%= t("starboard.channelHint") %></small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i data-lucide="smile" class="icon-sm"></i> <%= t("starboard.emoji") %></label>
+                            <input type="text" name="starboard_emoji" value="<%= settings.starboard_emoji || '⭐' %>" placeholder="⭐">
+                            <small><%= t("starboard.emojiHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("starboard.threshold") %></label>
+                            <input type="number" name="starboard_threshold" value="<%= settings.starboard_threshold || 3 %>" min="1" max="50" placeholder="3">
+                            <small><%= t("starboard.thresholdHint") %></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        document.getElementById('starboard-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data['plugins.starboard'] = e.target.querySelector('[name="plugins.starboard"]')?.checked || false;
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('<%= t("common.saved") %>', 'success');
+                } else {
+                    showToast('<%= t("common.errorSave") %>', 'error');
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
+            lucide.createIcons();
+        });
+    </script>
+    <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
+</body>
+</html>

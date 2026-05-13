@@ -3,27 +3,39 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const { Strategy } = require('passport-discord');
+const cookieParser = require('cookie-parser');
 const path = require('path');
+const { i18nMiddleware } = require('./i18n');
 
 function startDashboard(client) {
     const app = express();
     const port = process.env.DASHBOARD_PORT || 3000;
 
-    // motor de vistas
+    // view engine
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
     app.use(express.static(path.join(__dirname, 'public')));
+
+    // Stripe webhook needs raw body — mount before express.json
+    const stripeRoutes = require('./routes/stripe');
+    app.post('/stripe/webhook', stripeRoutes.webhookHandler);
+
+    // Body parsers
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
 
-    // sesiones (guardadas en MongoDB)
+    // i18n
+    app.use(i18nMiddleware);
+
+    // sessions (stored in MongoDB)
     app.use(session({
-        secret: process.env.SESSION_SECRET || 'rekybot-secret-key',
+        secret: process.env.SESSION_SECRET || 'kerybot-secret-key',
         resave: false,
         saveUninitialized: false,
         store: MongoStore.create({
             mongoUrl: process.env.MONGO_URI,
-            ttl: 60 * 60 * 24 // 1 día
+            ttl: 60 * 60 * 24 // 1 day
         }),
         cookie: {
             maxAge: 1000 * 60 * 60 * 24,
@@ -48,7 +60,7 @@ function startDashboard(client) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    // meter el cliente de discord en las requests
+    // attach discord client to requests
     app.use((req, res, next) => {
         req.client = client;
         res.locals.user = req.user || null;
@@ -56,15 +68,16 @@ function startDashboard(client) {
         next();
     });
 
-    // rutas
+    // routes
     app.use('/', require('./routes/auth'));
     app.use('/dashboard', require('./routes/dashboard'));
     app.use('/api', require('./routes/api'));
+    app.use('/stripe', stripeRoutes.router);
 
     // landing
     app.get('/', (req, res) => {
         res.render('index', {
-            botName: client.user?.username || 'rekybot',
+            botName: client.user?.username || 'kerybot',
             serverCount: client.guilds.cache.size,
             userCount: client.users.cache.size,
             commandCount: client.commands.size
@@ -73,11 +86,12 @@ function startDashboard(client) {
 
     // 404
     app.use((req, res) => {
-        res.status(404).render('error', { code: 404, message: 'Página no encontrada' });
+        res.status(404).render('error', { code: 404, message: res.locals.t('common.pageNotFound') });
     });
 
+    const { logger } = require('../bot/utils/logger');
     app.listen(port, () => {
-        console.log(`[DASHBOARD] Corriendo en http://localhost:${port}`);
+        logger.success('DASH', `Dashboard running at http://localhost:${port}`);
     });
 }
 

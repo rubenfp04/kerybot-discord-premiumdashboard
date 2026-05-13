@@ -1,18 +1,41 @@
 <nav class="navbar">
     <div class="nav-brand">
-        <a href="/"><span class="brand-icon"><i data-lucide="bot" style="width:18px;height:18px;color:#0a1422"></i></span> rekybot</a>
+        <a href="/"><img src="/img/logo.png" alt="kery" class="brand-logo"> kerybot</a>
     </div>
     <div class="nav-links">
-        <a href="/#features">Plugins</a>
+        <a href="/#features"><%= t('nav.plugins') %></a>
         <% if (user) { %>
-            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard"><%= t('nav.dashboard') %></a>
             <div class="nav-user">
                 <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=32" alt="avatar" class="nav-avatar">
                 <span><%= user.username %></span>
-                <a href="/auth/logout" class="btn btn-small btn-secondary"><i data-lucide="log-out" class="icon-sm"></i> Salir</a>
+                <a href="/auth/logout" class="btn btn-small btn-secondary"><i data-lucide="log-out" class="icon-sm"></i> <%= t('nav.logout') %></a>
             </div>
         <% } else { %>
-            <a href="/auth/login" class="btn btn-small btn-primary"><i data-lucide="log-in" class="icon-sm"></i> Iniciar sesión</a>
+            <a href="/auth/login" class="btn btn-small btn-primary"><i data-lucide="log-in" class="icon-sm"></i> <%= t('nav.login') %></a>
         <% } %>
+
+        <div class="lang-dropdown">
+            <button class="lang-dropdown-btn" onclick="this.parentElement.classList.toggle('open')">
+                <span class="lang-flag"><%= lang === 'es' ? '🇪🇸' : '🇬🇧' %></span>
+                <span class="lang-label"><%= lang === 'es' ? 'Español' : 'English' %></span>
+                <i data-lucide="chevron-down" class="lang-chevron"></i>
+            </button>
+            <div class="lang-dropdown-menu">
+                <a href="?lang=en" class="lang-option <%= lang === 'en' ? 'active' : '' %>">
+                    <span class="lang-flag">🇬🇧</span> English
+                </a>
+                <a href="?lang=es" class="lang-option <%= lang === 'es' ? 'active' : '' %>">
+                    <span class="lang-flag">🇪🇸</span> Español
+                </a>
+            </div>
+        </div>
     </div>
 </nav>
+<script>
+document.addEventListener('click', e => {
+    document.querySelectorAll('.lang-dropdown.open').forEach(d => {
+        if (!d.contains(e.target)) d.classList.remove('open');
+    });
+});
+</script>

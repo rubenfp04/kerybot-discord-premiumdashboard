@@ -1,13 +1,38 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.form-group select').forEach(select => {
+    document.querySelectorAll('.form-group select, .automod-item select').forEach(select => {
         buildCustomSelect(select);
     });
 });
 
 function buildCustomSelect(nativeSelect) {
+    // no construir dropdown interactivo para selects deshabilitados
+    if (nativeSelect.disabled) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'cs-wrapper cs-disabled';
+        const trigger = document.createElement('div');
+        trigger.className = 'cs-trigger';
+        const selectedText = document.createElement('span');
+        selectedText.className = 'cs-selected-text';
+        const opt = nativeSelect.options[nativeSelect.selectedIndex];
+        selectedText.textContent = opt ? opt.textContent : '';
+        const arrow = document.createElement('span');
+        arrow.className = 'cs-arrow';
+        arrow.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+        trigger.appendChild(selectedText);
+        trigger.appendChild(arrow);
+        wrapper.appendChild(trigger);
+        nativeSelect.style.display = 'none';
+        nativeSelect.parentNode.insertBefore(wrapper, nativeSelect.nextSibling);
+        return;
+    }
+
+    const isCompact = nativeSelect.closest('.automod-item') !== null;
+    const optionCount = nativeSelect.options.length;
+    const showSearch = optionCount > 8;
+
     const wrapper = document.createElement('div');
-    wrapper.className = 'cs-wrapper';
+    wrapper.className = 'cs-wrapper' + (isCompact ? ' cs-compact' : '');
 
     const trigger = document.createElement('div');
     trigger.className = 'cs-trigger';
@@ -27,7 +52,7 @@ function buildCustomSelect(nativeSelect) {
     dropdown.className = 'cs-dropdown';
 
     const searchInput = document.createElement('input');
-    searchInput.className = 'cs-search';
+    searchInput.className = 'cs-search' + (showSearch ? '' : ' hidden');
     searchInput.type = 'text';
     searchInput.placeholder = 'Buscar...';
     dropdown.appendChild(searchInput);

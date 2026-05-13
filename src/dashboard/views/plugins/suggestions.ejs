@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t("suggestions.title") %> — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'suggestions' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="lightbulb"></i> <%= t("suggestions.title") %></h1>
+            <p class="page-desc"><%= t("suggestions.desc") %></p>
+
+            <!-- TABS -->
+            <div class="config-tabs">
+                <button class="config-tab active" data-tab="general">
+                    <i data-lucide="settings" class="icon-sm"></i> <%= t("suggestions.tabGeneral") %>
+                </button>
+                <button class="config-tab" data-tab="canales">
+                    <i data-lucide="hash" class="icon-sm"></i> <%= t("suggestions.tabChannels") %>
+                </button>
+                <button class="config-tab" data-tab="reacciones">
+                    <i data-lucide="smile" class="icon-sm"></i> <%= t("suggestions.tabReactions") %>
+                </button>
+            </div>
+
+            <form id="suggestions-form">
+
+                <!-- ═══ TAB: GENERAL ═══ -->
+                <div class="tab-panel active" data-panel="general">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("suggestions.system") %></h3>
+                                <p><%= t("suggestions.systemDesc") %></p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="plugins.suggestions" <%= settings.plugins?.suggestions ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("suggestions.channel") %></label>
+                            <select name="suggestions_channel">
+                                <option value=""><%= t("common.selectChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.suggestions_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("suggestions.channelHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="config-section-header" style="padding:0;border:none;margin:0">
+                                <div>
+                                    <label style="margin:0"><i data-lucide="eye-off" class="icon-sm"></i> <%= t("suggestions.anonymous") %></label>
+                                    <small style="display:block;margin-top:0.25rem"><%= t("suggestions.anonymousDesc") %></small>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" name="suggestions_anonymous" <%= settings.suggestions_anonymous ? 'checked' : '' %>>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB: CHANNELS ═══ -->
+                <div class="tab-panel" data-panel="canales">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("suggestions.resolutionTitle") %></h3>
+                                <p><%= t("suggestions.resolutionDesc") %></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="check-circle" class="icon-sm"></i> <%= t("suggestions.approvedChannel") %></label>
+                            <select name="suggestions_approved_channel">
+                                <option value=""><%= t("suggestions.noMove") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.suggestions_approved_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("suggestions.approvedHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="x-circle" class="icon-sm"></i> <%= t("suggestions.deniedChannel") %></label>
+                            <select name="suggestions_denied_channel">
+                                <option value=""><%= t("suggestions.noMove") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.suggestions_denied_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("suggestions.deniedHint") %></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB: REACTIONS ═══ -->
+                <div class="tab-panel" data-panel="reacciones">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("suggestions.votingTitle") %></h3>
+                                <p><%= t("suggestions.votingDesc") %></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i data-lucide="thumbs-up" class="icon-sm"></i> <%= t("suggestions.upvote") %></label>
+                                <input type="text" name="suggestions_upvote_emoji" placeholder="👍" value="<%= settings.suggestions_upvote_emoji || '👍' %>" maxlength="5">
+                                <small><%= t("suggestions.upvoteHint") %></small>
+                            </div>
+                            <div class="form-group">
+                                <label><i data-lucide="thumbs-down" class="icon-sm"></i> <%= t("suggestions.downvote") %></label>
+                                <input type="text" name="suggestions_downvote_emoji" placeholder="👎" value="<%= settings.suggestions_downvote_emoji || '👎' %>" maxlength="5">
+                                <small><%= t("suggestions.downvoteHint") %></small>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="config-section" style="margin-top:1rem">
+                            <div class="config-section-header">
+                                <div>
+                                    <h3><i data-lucide="eye" class="icon-sm"></i> <%= t("suggestions.previewTitle") %></h3>
+                                    <p><%= t("suggestions.previewDesc") %></p>
+                                </div>
+                            </div>
+                            <div class="ticket-panel-preview">
+                                <div class="ticket-embed-preview">
+                                    <div class="ticket-embed-bar" style="background:#ffab40"></div>
+                                    <div class="ticket-embed-body">
+                                        <h4>💡 <%= t("suggestions.title") %> #1</h4>
+                                        <p><%= t("suggestions.previewText") %></p>
+                                        <p style="margin-top:0.5rem;font-size:0.75rem;color:#72767d"><%= settings.suggestions_anonymous ? t('suggestions.previewAnon') : t('suggestions.previewUser') %></p>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:0.75rem;margin-top:0.25rem">
+                                    <span style="font-size:1.2rem" id="preview-upvote"><%= settings.suggestions_upvote_emoji || '👍' %></span>
+                                    <span style="font-size:0.85rem;color:#72767d;align-self:center">3</span>
+                                    <span style="font-size:1.2rem" id="preview-downvote"><%= settings.suggestions_downvote_emoji || '👎' %></span>
+                                    <span style="font-size:0.85rem;color:#72767d;align-self:center">1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        // ── Tabs ──
+        document.querySelectorAll('.config-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+            });
+        });
+
+        // ── Preview emojis en vivo ──
+        const upInput = document.querySelector('[name="suggestions_upvote_emoji"]');
+        const downInput = document.querySelector('[name="suggestions_downvote_emoji"]');
+        if (upInput) upInput.addEventListener('input', () => {
+            document.getElementById('preview-upvote').textContent = upInput.value || '👍';
+        });
+        if (downInput) downInput.addEventListener('input', () => {
+            document.getElementById('preview-downvote').textContent = downInput.value || '👎';
+        });
+
+        // ── Guardar ──
+        document.getElementById('suggestions-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data['plugins.suggestions'] = e.target.querySelector('[name="plugins.suggestions"]')?.checked || false;
+            data['suggestions_anonymous'] = e.target.querySelector('[name="suggestions_anonymous"]')?.checked || false;
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('<%= t("common.saved") %>', 'success');
+                } else {
+                    showToast('<%= t("common.errorSave") %>', 'error');
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
+            lucide.createIcons();
+        });
+    </script>
+    <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
+</body>
+</html>

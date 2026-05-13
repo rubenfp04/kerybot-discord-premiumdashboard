@@ -15,7 +15,7 @@ module.exports = {
 
     embeds: {
         color: '#5865F2',
-        footer: 'rekybot • {year}'
+        footer: 'kerybot • {year}'
     },
 
     emojis: {

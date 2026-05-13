@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t("tickets.title") %> — <%= guild.name %></title>
+    <%- include('../partials/head') %>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="panel-layout">
+        <%- include('../partials/sidebar', { guild, settings, active: 'tickets' }) %>
+
+        <div class="panel-content">
+            <h1 class="page-title"><i data-lucide="ticket"></i> <%= t("tickets.title") %></h1>
+            <p class="page-desc"><%= t("tickets.desc") %></p>
+
+            <!-- TABS -->
+            <div class="config-tabs">
+                <button class="config-tab active" data-tab="general">
+                    <i data-lucide="settings" class="icon-sm"></i> <%= t("tickets.tabGeneral") %>
+                </button>
+                <button class="config-tab" data-tab="panel">
+                    <i data-lucide="layout" class="icon-sm"></i> <%= t("tickets.tabPanel") %>
+                </button>
+                <button class="config-tab" data-tab="mensajes">
+                    <i data-lucide="message-square" class="icon-sm"></i> <%= t("tickets.tabMessages") %>
+                </button>
+            </div>
+
+            <form id="tickets-form">
+
+                <!-- ═══ TAB: GENERAL ═══ -->
+                <div class="tab-panel active" data-panel="general">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("tickets.system") %></h3>
+                                <p><%= t("tickets.systemDesc") %></p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="plugins.tickets" <%= settings.plugins?.tickets ? 'checked' : '' %>>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="folder" class="icon-sm"></i> <%= t("tickets.category") %></label>
+                            <select name="tickets_category">
+                                <option value=""><%= t("tickets.selectCategory") %></option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.id %>" <%= settings.tickets_category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("tickets.categoryHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="user-check" class="icon-sm"></i> <%= t("tickets.supportRole") %></label>
+                            <select name="tickets_support_role">
+                                <option value=""><%= t("tickets.noRole") %></option>
+                                <% roles.forEach(role => { %>
+                                    <option value="<%= role.id %>" <%= settings.tickets_support_role === role.id ? 'selected' : '' %>><%= role.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("tickets.supportRoleHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("tickets.logChannel") %></label>
+                            <select name="tickets_log_channel">
+                                <option value=""><%= t("tickets.noLogChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.tickets_log_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("tickets.logHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("tickets.maxTickets") %></label>
+                            <select name="tickets_max_open">
+                                <option value="1" <%= (settings.tickets_max_open || 1) == 1 ? 'selected' : '' %>>1 ticket</option>
+                                <option value="2" <%= settings.tickets_max_open == 2 ? 'selected' : '' %>>2 tickets</option>
+                                <option value="3" <%= settings.tickets_max_open == 3 ? 'selected' : '' %>>3 tickets</option>
+                                <option value="5" <%= settings.tickets_max_open == 5 ? 'selected' : '' %>>5 tickets</option>
+                            </select>
+                            <small><%= t("tickets.maxHint") %></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB: OPENING PANEL ═══ -->
+                <div class="tab-panel" data-panel="panel">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("tickets.panelTitle") %></h3>
+                                <p><%= t("tickets.panelDesc") %></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="hash" class="icon-sm"></i> <%= t("tickets.panelChannel") %></label>
+                            <select name="tickets_panel_channel">
+                                <option value=""><%= t("common.selectChannel") %></option>
+                                <% channels.forEach(ch => { %>
+                                    <option value="<%= ch.id %>" <%= settings.tickets_panel_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
+                                <% }) %>
+                            </select>
+                            <small><%= t("tickets.panelChannelHint") %></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="type" class="icon-sm"></i> <%= t("tickets.embedTitle") %></label>
+                            <input type="text" name="tickets_panel_title" placeholder="🎫 Support" value="<%= settings.tickets_panel_title || '🎫 Support' %>">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="text" class="icon-sm"></i> <%= t("tickets.embedDescription") %></label>
+                            <textarea name="tickets_panel_description" rows="3" placeholder="<%= t('tickets.embedDescPlaceholder') %>"><%= settings.tickets_panel_description || t('tickets.embedDescPlaceholder') %></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i data-lucide="palette" class="icon-sm"></i> <%= t("tickets.embedColor") %></label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" name="tickets_panel_color" value="<%= settings.tickets_panel_color || '#00e5ff' %>" class="color-input">
+                                    <span class="color-value"><%= settings.tickets_panel_color || '#00e5ff' %></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i data-lucide="mouse-pointer-click" class="icon-sm"></i> <%= t("tickets.buttonText") %></label>
+                                <input type="text" name="tickets_panel_button_text" placeholder="<%= t('tickets.buttonTextDefault') %>" value="<%= settings.tickets_panel_button_text || t('tickets.buttonTextDefault') %>">
+                            </div>
+                            <div class="form-group">
+                                <label><i data-lucide="smile" class="icon-sm"></i> <%= t("tickets.buttonEmoji") %></label>
+                                <input type="text" name="tickets_panel_button_emoji" placeholder="🎫" value="<%= settings.tickets_panel_button_emoji || '🎫' %>" maxlength="5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vista previa del panel -->
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><i data-lucide="eye" class="icon-sm"></i> <%= t("tickets.preview") %></h3>
+                                <p><%= t("tickets.previewDesc") %></p>
+                            </div>
+                        </div>
+                        <div class="ticket-panel-preview">
+                            <div class="ticket-embed-preview" id="ticket-embed-preview">
+                                <div class="ticket-embed-bar" id="ticket-embed-bar" style="background:<%= settings.tickets_panel_color || '#00e5ff' %>"></div>
+                                <div class="ticket-embed-body">
+                                    <h4 id="ticket-preview-title"><%= settings.tickets_panel_title || '🎫 Support' %></h4>
+                                    <p id="ticket-preview-desc"><%= settings.tickets_panel_description || t('tickets.embedDescPlaceholder') %></p>
+                                </div>
+                            </div>
+                            <button class="ticket-btn-preview" id="ticket-btn-preview" type="button">
+                                <span id="ticket-btn-emoji"><%= settings.tickets_panel_button_emoji || '🎫' %></span>
+                                <span id="ticket-btn-text"><%= settings.tickets_panel_button_text || t('tickets.buttonTextDefault') %></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB: MESSAGES ═══ -->
+                <div class="tab-panel" data-panel="mensajes">
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("tickets.welcomeMsg") %></h3>
+                                <p><%= t("tickets.welcomeMsgDesc") %></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="text" class="icon-sm"></i> <%= t("tickets.openMsg") %></label>
+                            <textarea name="tickets_message" rows="3" placeholder="<%= t('tickets.openMsgPlaceholder') %>"><%= settings.tickets_message || t('tickets.openMsgPlaceholder') %></textarea>
+                            <small><%= t('welcome.variables') %> <code>{user}</code> <%= t('welcome.varUser') %> · <code>{server}</code> <%= t('welcome.varServer') %></small>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="config-section-header">
+                            <div>
+                                <h3><%= t("tickets.closeMsg") %></h3>
+                                <p><%= t("tickets.closeMsgDesc") %></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i data-lucide="text" class="icon-sm"></i> <%= t("tickets.closeMsgLabel") %></label>
+                            <textarea name="tickets_close_message" rows="3" placeholder="<%= t('tickets.closeMsgPlaceholder') %>"><%= settings.tickets_close_message || t('tickets.closeMsgPlaceholder') %></textarea>
+                            <small><%= t('welcome.variables') %> <code>{user}</code> <%= t('welcome.varUser') %> · <code>{server}</code> <%= t('welcome.varServer') %></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const guildId = '<%= guild.id %>';
+
+        // ── Tabs ──
+        document.querySelectorAll('.config-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.config-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+            });
+        });
+
+        // ── Vista previa en vivo ──
+        const titleInput = document.querySelector('[name="tickets_panel_title"]');
+        const descInput = document.querySelector('[name="tickets_panel_description"]');
+        const colorInput = document.querySelector('[name="tickets_panel_color"]');
+        const btnTextInput = document.querySelector('[name="tickets_panel_button_text"]');
+        const btnEmojiInput = document.querySelector('[name="tickets_panel_button_emoji"]');
+
+        if (titleInput) titleInput.addEventListener('input', () => {
+            document.getElementById('ticket-preview-title').textContent = titleInput.value || '🎫 Support';
+        });
+        if (descInput) descInput.addEventListener('input', () => {
+            document.getElementById('ticket-preview-desc').textContent = descInput.value || '<%= t("tickets.embedDescPlaceholder") %>';
+        });
+        if (colorInput) {
+            colorInput.addEventListener('input', () => {
+                document.getElementById('ticket-embed-bar').style.background = colorInput.value;
+                document.querySelector('.color-value').textContent = colorInput.value;
+            });
+        }
+        if (btnTextInput) btnTextInput.addEventListener('input', () => {
+            document.getElementById('ticket-btn-text').textContent = btnTextInput.value || '<%= t("tickets.buttonTextDefault") %>';
+        });
+        if (btnEmojiInput) btnEmojiInput.addEventListener('input', () => {
+            document.getElementById('ticket-btn-emoji').textContent = btnEmojiInput.value || '🎫';
+        });
+
+        // ── Guardar ──
+        document.getElementById('tickets-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
+            lucide.createIcons();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data['plugins.tickets'] = e.target.querySelector('[name="plugins.tickets"]')?.checked || false;
+
+            try {
+                const res = await fetch(`/api/guilds/${guildId}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    showToast('<%= t("common.saved") %>', 'success');
+                } else {
+                    showToast('<%= t("common.errorSave") %>', 'error');
+                }
+            } catch {
+                showToast('<%= t("common.errorConnection") %>', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
+            lucide.createIcons();
+        });
+    </script>
+    <%- include('../partials/toast') %>
+    <%- include('../partials/custom-select') %>
+</body>
+</html>

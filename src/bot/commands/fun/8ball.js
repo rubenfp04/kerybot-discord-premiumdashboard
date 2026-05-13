@@ -1,43 +1,31 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { createEmbed } = require('../../utils/embeds');
-
-const respuestas = [
-    'Sí, definitivamente.',
-    'Sin duda.',
-    'Probablemente sí.',
-    'Las señales apuntan a que sí.',
-    'Yo creo que sí.',
-    'Puede ser.',
-    'No estoy seguro.',
-    'Mejor no te lo digo ahora.',
-    'Concéntrate y vuelve a preguntar.',
-    'No cuentes con ello.',
-    'Probablemente no.',
-    'Definitivamente no.',
-    'Las perspectivas no son buenas.',
-    'Muy dudoso.',
-    'Ni de broma.'
-];
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getGuildTranslator } = require('../../utils/i18n');
+const { t: rawT } = require('../../utils/i18n');
 
 module.exports = {
-    category: 'diversión',
+    category: 'fun',
     data: new SlashCommandBuilder()
         .setName('8ball')
-        .setDescription('Hazle una pregunta a la bola mágica')
-        .addStringOption(opt => opt.setName('pregunta').setDescription('Tu pregunta').setRequired(true)),
+        .setDescription('Ask the magic 8-ball a question')
+        .addStringOption(opt => opt.setName('question').setDescription('Your question').setRequired(true)),
 
     async execute(interaction) {
-        const pregunta = interaction.options.getString('pregunta');
-        const respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
+        const t = await getGuildTranslator(interaction.guildId);
+        const question = interaction.options.getString('question');
+        const responses = rawT(null, '8ball.responses');
+        // Get guild-specific responses
+        const guildResponses = t('8ball.responses');
+        const localResponses = Array.isArray(guildResponses) ? guildResponses : responses;
+        const answer = localResponses[Math.floor(Math.random() * localResponses.length)];
 
-        return interaction.reply({
-            embeds: [createEmbed({
-                title: '🎱 Bola Mágica',
-                fields: [
-                    { name: 'Pregunta', value: pregunta },
-                    { name: 'Respuesta', value: respuesta }
-                ]
-            })]
-        });
+        const embed = new EmbedBuilder()
+            .setTitle(t('8ball.title'))
+            .setColor(0x00e5ff)
+            .addFields(
+                { name: t('8ball.question'), value: question },
+                { name: t('8ball.answer'), value: answer }
+            );
+
+        return interaction.reply({ embeds: [embed] });
     }
 };

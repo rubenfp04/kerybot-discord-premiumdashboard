@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<%= lang %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niveles — <%= guild.name %></title>
+    <title><%= t("levels.title") %> — <%= guild.name %></title>
     <%- include('../partials/head') %>
 </head>
 <body>
@@ -13,15 +13,15 @@
         <%- include('../partials/sidebar', { guild, settings, active: 'levels' }) %>
 
         <div class="panel-content">
-            <h1 class="page-title"><i data-lucide="bar-chart-3"></i> Niveles</h1>
-            <p class="page-desc">Sistema de XP y niveles para premiar a los miembros más activos.</p>
+            <h1 class="page-title"><i data-lucide="bar-chart-3"></i> <%= t("levels.title") %></h1>
+            <p class="page-desc"><%= t("levels.desc") %></p>
 
             <form id="levels-form">
                 <div class="config-section">
                     <div class="config-section-header">
                         <div>
-                            <h3>Sistema de niveles</h3>
-                            <p>Los miembros ganan XP al enviar mensajes</p>
+                            <h3><%= t("levels.system") %></h3>
+                            <p><%= t("levels.systemDesc") %></p>
                         </div>
                         <label class="toggle">
                             <input type="checkbox" name="plugins.levels" <%= settings.plugins?.levels ? 'checked' : '' %>>
@@ -30,36 +30,62 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Canal de anuncios de nivel</label>
+                        <label><i data-lucide="megaphone" class="icon-sm"></i> <%= t("levels.announceType") %></label>
+                        <div class="level-type-selector">
+                            <label class="level-type-option <%= (settings.levels_type || 'card') === 'card' ? 'selected' : '' %>">
+                                <input type="radio" name="levels_type" value="card" <%= (settings.levels_type || 'card') === 'card' ? 'checked' : '' %>>
+                                <div class="level-type-card">
+                                    <div class="level-type-icon"><i data-lucide="image"></i></div>
+                                    <div>
+                                        <h4><%= t("levels.visualCard") %></h4>
+                                        <p><%= t("levels.visualCardDesc") %></p>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="level-type-option <%= settings.levels_type === 'text' ? 'selected' : '' %>">
+                                <input type="radio" name="levels_type" value="text" <%= settings.levels_type === 'text' ? 'checked' : '' %>>
+                                <div class="level-type-card">
+                                    <div class="level-type-icon"><i data-lucide="type"></i></div>
+                                    <div>
+                                        <h4><%= t("levels.plainText") %></h4>
+                                        <p><%= t("levels.plainTextDesc") %></p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i data-lucide="hash" class="icon-sm"></i> <%= t("levels.announceChannel") %></label>
                         <select name="levels_channel">
-                            <option value="">Mismo canal del mensaje</option>
+                            <option value=""><%= t("levels.sameChannel") %></option>
                             <% channels.forEach(ch => { %>
                                 <option value="<%= ch.id %>" <%= settings.levels_channel === ch.id ? 'selected' : '' %>>#<%= ch.name %></option>
                             <% }) %>
                         </select>
-                        <small>Donde se envía el mensaje de subida de nivel</small>
+                        <small><%= t("levels.channelHint") %></small>
+                    </div>
+
+                    <div class="form-group level-text-settings" style="<%= (settings.levels_type || 'card') === 'text' ? '' : 'display:none' %>">
+                        <label><i data-lucide="text" class="icon-sm"></i> <%= t("levels.levelMessage") %></label>
+                        <textarea name="levels_message" rows="2" placeholder="<%= t('levels.levelPlaceholder') %>"><%= settings.levels_message || t('levels.levelPlaceholder') %></textarea>
+                        <small><%= t("levels.levelMsgHint") %></small>
                     </div>
 
                     <div class="form-group">
-                        <label>Mensaje de subida de nivel</label>
-                        <textarea name="levels_message" rows="2" placeholder="¡{user} subió al nivel {level}!"><%= settings.levels_message || '¡{user} subió al nivel {level}!' %></textarea>
-                        <small>Variables: <code>{user}</code> <code>{level}</code></small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Multiplicador de XP <span class="form-hint">(1 = normal, 2 = doble)</span></label>
+                        <label><i data-lucide="zap" class="icon-sm"></i> <%= t("levels.xpMultiplier") %> <span class="form-hint">(<%= t("levels.xpHint") %>)</span></label>
                         <select name="levels_multiplier">
-                            <option value="0.5" <%= settings.levels_multiplier == 0.5 ? 'selected' : '' %>>0.5x (lento)</option>
-                            <option value="1" <%= settings.levels_multiplier == 1 ? 'selected' : '' %>>1x (normal)</option>
+                            <option value="0.5" <%= settings.levels_multiplier == 0.5 ? 'selected' : '' %>>0.5x (<%= t("levels.slow") %>)</option>
+                            <option value="1" <%= settings.levels_multiplier == 1 ? 'selected' : '' %>>1x (<%= t("levels.normal") %>)</option>
                             <option value="1.5" <%= settings.levels_multiplier == 1.5 ? 'selected' : '' %>>1.5x</option>
-                            <option value="2" <%= settings.levels_multiplier == 2 ? 'selected' : '' %>>2x (rápido)</option>
-                            <option value="3" <%= settings.levels_multiplier == 3 ? 'selected' : '' %>>3x (muy rápido)</option>
+                            <option value="2" <%= settings.levels_multiplier == 2 ? 'selected' : '' %>>2x (<%= t("levels.fast") %>)</option>
+                            <option value="3" <%= settings.levels_multiplier == 3 ? 'selected' : '' %>>3x (<%= t("levels.veryFast") %>)</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> Guardar cambios</button>
+                    <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %></button>
                 </div>
             </form>
         </div>
@@ -69,11 +95,20 @@
         lucide.createIcons();
         const guildId = '<%= guild.id %>';
 
+        // Level type toggle
+        document.querySelectorAll('.level-type-option input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.querySelectorAll('.level-type-option').forEach(opt => opt.classList.remove('selected'));
+                radio.closest('.level-type-option').classList.add('selected');
+                document.querySelector('.level-text-settings').style.display = radio.value === 'text' ? '' : 'none';
+            });
+        });
+
         document.getElementById('levels-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> Guardando...';
+            btn.innerHTML = '<i data-lucide="loader-2" class="icon-sm" style="animation:spin 1s linear infinite"></i> <%= t('common.saving') %>';
             lucide.createIcons();
 
             const formData = new FormData(e.target);
@@ -87,16 +122,16 @@
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
-                    showToast('Configuración guardada correctamente', 'success');
+                    showToast('<%= t("common.saved") %>', 'success');
                 } else {
-                    showToast('Error al guardar', 'error');
+                    showToast('<%= t("common.errorSave") %>', 'error');
                 }
             } catch {
-                showToast('Error de conexión', 'error');
+                showToast('<%= t("common.errorConnection") %>', 'error');
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> Guardar cambios';
+            btn.innerHTML = '<i data-lucide="save" class="icon-sm"></i> <%= t("common.save") %>';
             lucide.createIcons();
         });
     </script>

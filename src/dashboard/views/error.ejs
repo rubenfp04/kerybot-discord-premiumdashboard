@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<%= lang %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error <%= code %> — rekybot</title>
+    <title>Error <%= code %> — kerybot</title>
     <%- include('partials/head') %>
 </head>
 <body>
@@ -22,7 +22,7 @@
         </div>
         <h1><%= code %></h1>
         <p><%= message %></p>
-        <a href="/" class="btn btn-primary">Volver al inicio</a>
+        <a href="/" class="btn btn-primary"><%= t('error.backHome') %></a>
     </main>
 
     <%- include('partials/footer') %>
