@@ -4,7 +4,7 @@ module.exports = {
         status: 'online',
         activity: {
             type: 'WATCHING',
-            text: '{servers} servidores'
+            text: '{servers} servers'
         }
     },
 
