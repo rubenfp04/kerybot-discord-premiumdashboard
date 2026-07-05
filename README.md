@@ -1,7 +1,7 @@
 ﻿# kerybot 🤖
 
 [![GitHub release](https://img.shields.io/github/v/release/rubenfp04/kerybot-discord-premiumdashboard?style=flat-square&color=00e5ff)](https://github.com/rubenfp04/kerybot-discord-premiumdashboard/releases/latest)
-[![Downloads](https://img.shields.io/badge/downloads-17-7C4DFF?style=flat-square)](https://github.com/rubenfp04/kerybot-discord-premiumdashboard)
+[![Downloads](https://img.shields.io/github/downloads/rubenfp04/kerybot-discord-premiumdashboard?style=flat-square)](https://github.com/rubenfp04/kerybot-discord-premiumdashboard)
 [![License](https://img.shields.io/github/license/rubenfp04/kerybot-discord-premiumdashboard?style=flat-square)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-18%2B-brightgreen?style=flat-square)](https://nodejs.org)
 
